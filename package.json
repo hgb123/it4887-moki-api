@@ -1,0 +1,15 @@
+{
+  "name": "moki-api",
+  "version": "1.0.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hgb123/it4887-moki-api.git"
+  },
+  "author": "Bao and Minh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hgb123/it4887-moki-api/issues"
+  },
+  "homepage": "https://github.com/hgb123/it4887-moki-api#readme"
+}
