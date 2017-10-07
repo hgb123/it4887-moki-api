@@ -1,37 +1,41 @@
+var token_middleware = require("../middlewares/token");
+
 module.exports = function (app, product_controller) {
-    app.post("/get_list_products",
-
+    app.get("/api/products",
+        product_controller.retrieve_all,
+        function (req, res) {
+            return res.status(200).send(res.products);
+        }
     );
 
-    app.post("/get_products",
-
+    app.get("/api/products/:product_id",
+        product_controller.retrieve_one,
+        function (req, res) {
+            return res.status(200).send(res.product);
+        }
     );
 
-    app.post("/add_products",
-
+    app.post("/api/products",
+        token_middleware.verify,
+        product_controller.create,
+        function (req, res) {
+            return res.status(201).send(res.product);
+        }
     );
 
-    app.post("/edit_products",
-
+    app.put("/api/products/:product_id",
+        token_middleware.verify,
+        product_controller.update,
+        function (req, res) {
+            return res.status(200).send(res.product);
+        }
     );
 
-    app.post("/del_products",
-
-    );
-
-    app.post("/get_comment_products",
-
-    );
-
-    app.post("/set_comment_products",
-
-    );
-
-    app.post("/report_products",
-
-    );
-
-    app.post("/like_products",
-
+    app.delete("/api/products/:product_id",
+        token_middleware.verify,
+        product_controller.delete,
+        function (req, res) {
+            return res.status(200).send(res.product_deleted);
+        }
     );
 }
