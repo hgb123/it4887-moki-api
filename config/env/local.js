@@ -4,7 +4,7 @@ module.exports = {
         username: "root",
         password: "Haha123456789",
         database: "moki",
-        host: "localhost:3306",
+        host: "localhost",
         dialect: "mysql"
     },
     authen: {
