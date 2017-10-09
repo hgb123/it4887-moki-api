@@ -33,7 +33,7 @@ ProductController.prototype.retrieve_one = function (req, res, next) {
 }
 
 ProductController.prototype.create = function (req, res, next) {
-    dependencies.product_service.create(req.product_obj, function (err, product) {
+    dependencies.product_service.create(req.authen_user.id, req.product_obj, function (err, product) {
         if (err) {
             next(err);
         } else {
