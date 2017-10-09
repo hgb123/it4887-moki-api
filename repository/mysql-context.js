@@ -4,14 +4,15 @@ var DataContext = function(config) {
     var sequelize = new Sequelize(config.database, config.username, config.password, config);
 
     var Product = sequelize.import("./mysql-models/product");
-    // var Comment = require("./mysql-models/comment");
-    // var Brand = require("./mysql-models/brand");
-    // var ProductBrand = require("./mysql-models/product-brand");
-    // var Category = require("./mysql-models/category");
-    // var ProductCategory = require("./mysql-models/product-category");
+    // var Comment = sequelize.import("./mysql-models/comment");
+    var Brand = sequelize.import("./mysql-models/brand");
+    var Category = sequelize.import("./mysql-models/category");
+    // var ProductCategory = sequelize.import("./mysql-models/product-category");
 
     return {
         Product: Product,
+        Brand: Brand,
+        Category: Category,
         sequelize: sequelize
     }
 }

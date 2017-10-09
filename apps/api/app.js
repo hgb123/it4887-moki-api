@@ -20,21 +20,35 @@ var mysql_data_context = require("../../repository/mysql-context")(config.mysql)
 
 // Repository
 var ProductRepository = require("../../repository/product-repository");
+var BrandRepository = require("../../repository/brand-repository");
+var CategoryRepository = require("../../repository/category-repository");
 var product_repository = new ProductRepository(mysql_data_context);
+var brand_repository = new BrandRepository(mysql_data_context);
+var category_repository = new CategoryRepository(mysql_data_context);
 
 // Service
 var ProductService = require("../../services/product-services");
+var BrandService = require("../../services/brand-services");
+var CategoryService = require("../../services/category-services");
 var product_service = new ProductService(product_repository);
+var brand_service = new BrandService(brand_repository);
+var category_service = new CategoryService(category_repository);
 
 // Controller
 var ProductController = require("./controllers/product-controller");
+var BrandController = require("./controllers/brand-controller");
+var CategoryController = require("./controllers/category-controller");
 var product_controller = new ProductController(product_service);
+var brand_controller = new BrandController(brand_service);
+var category_controller = new CategoryController(category_service);
 
 /* ===== End Components setup  ===== */
 
 // require("./routes/authen-routes")(app, authen_controller);
 // require("./routes/user-routes")(app, user_controller);
-require("./routes/product-routes")(app, product_controller);
+// require("./routes/product-routes")(app, product_controller);
+require("./routes/brand-routes")(app, brand_controller);
+require("./routes/category-routes")(app, category_controller);
 // require("./routes/order-routes")(app, user_controller);
 
 app.use(function (err, req, res, next) {
