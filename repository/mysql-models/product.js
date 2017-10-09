@@ -37,12 +37,24 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.TEXT,
             allowNull: false
         },
-        weight: {
-            type: DataTypes.STRING(10),
+        brand: {
+            type: DataType.STRING(50),
             allowNull: true
         },
+        weight: {
+            type: DataTypes.STRING(50),
+            allowNull: true
+        },
+        size: {
+            type: DataTypes.STRING(50),
+            allowNull: false
+        },
         dimension: {
-            type: DataTypes.STRING(10),
+            type: DataTypes.STRING(50),
+            allowNull: true
+        },
+        ship_from: {
+            type: DataType.STRING(200),
             allowNull: true
         },
         is_banned: {
