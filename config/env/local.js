@@ -8,6 +8,6 @@ module.exports = {
         dialect: "mysql"
     },
     authen: {
-        secret: "it4887#local"
+        secret: "localtest"
     }
 }
