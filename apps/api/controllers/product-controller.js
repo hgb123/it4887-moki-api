@@ -66,4 +66,15 @@ ProductController.prototype.delete = function (req, res, next) {
     });
 }
 
+ProductController.prototype.like = function (req, res, next) {
+    dependencies.product_service.like(req.authen_user.id, req.params.product_id, function (err, product_liked) {
+        if (err) {
+            next(err);
+        } else {
+            res.product_liked = product_liked;
+            next();
+        }
+    });
+}
+
 module.exports = ProductController;
