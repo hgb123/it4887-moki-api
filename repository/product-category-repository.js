@@ -1,18 +1,17 @@
 var dependencies = {
     db_context: null,
-    Brand: null
+    ProductCategory: null
 }
 
-var BrandRepository = function (db_context) {
+var ProductCategoryRepository = function (db_context) {
     dependencies.db_context = db_context;
-    dependencies.Brand = db_context.Brand
+    dependencies.ProductCategory = db_context.ProductCategory
 }
 
-BrandRepository.prototype.find_all = function (condition, page, limit, callback) {
-    dependencies.Brand
+ProductCategoryRepository.prototype.find_all = function (condition, page, limit, callback) {
+    dependencies.ProductCategory
         .findAll({
             where: condition,
-            order: [["name", "ASC"]],
             limit: limit,
             offset: page * limit
         })
@@ -27,8 +26,8 @@ BrandRepository.prototype.find_all = function (condition, page, limit, callback)
         });
 }
 
-BrandRepository.prototype.find_by = function (condition, callback) {
-    dependencies.Brand
+ProductCategoryRepository.prototype.find_by = function (condition, callback) {
+    dependencies.ProductCategory
         .findOne({
             where: condition
         })
@@ -41,9 +40,9 @@ BrandRepository.prototype.find_by = function (condition, callback) {
         });
 }
 
-BrandRepository.prototype.create = function (brand_obj, callback) {
-    dependencies.Brand
-        .create(brand_obj)
+ProductCategoryRepository.prototype.create = function (prod_cate_obj, callback) {
+    dependencies.ProductCategory
+        .create(prod_cate_obj)
         .then(function (result) {
             if (result) result = result.dataValues;
             callback(null, result);
@@ -53,9 +52,9 @@ BrandRepository.prototype.create = function (brand_obj, callback) {
         });
 }
 
-BrandRepository.prototype.update = function (condition, brand_obj, callback) {
-    dependencies.Brand
-        .update(brand_obj, {
+ProductCategoryRepository.prototype.update = function (condition, prod_cate_obj, callback) {
+    dependencies.ProductCategory
+        .update(prod_cate_obj, {
             where: condition
         })
         .then(function (result) {
@@ -72,8 +71,8 @@ BrandRepository.prototype.update = function (condition, brand_obj, callback) {
         });
 }
 
-BrandRepository.prototype.delete = function (condition, callback) {
-    dependencies.Brand
+ProductCategoryRepository.prototype.delete = function (condition, callback) {
+    dependencies.ProductCategory
         .destroy({
             where: condition
         })
@@ -85,4 +84,4 @@ BrandRepository.prototype.delete = function (condition, callback) {
         });
 }
 
-module.exports = BrandRepository;
+module.exports = ProductCategoryRepository;

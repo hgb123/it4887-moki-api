@@ -18,7 +18,7 @@ CategoryRepository.prototype.find_all = function (condition, page, limit, callba
         })
         .then(function (result) {
             for (var i = 0; i < result.length; i++) {
-                result[i] = result[i].dataValues;
+                if (result[i]) result[i] = result[i].dataValues;
             }
             callback(null, result);
         })
@@ -33,7 +33,7 @@ CategoryRepository.prototype.find_by = function (condition, callback) {
             where: condition
         })
         .then(function (result) {
-            var result = result.dataValues;
+            if (result) result = result.dataValues;
             callback(null, result);
         })
         .catch(function (err) {
@@ -45,7 +45,7 @@ CategoryRepository.prototype.create = function (category_obj, callback) {
     dependencies.Category
         .create(category_obj)
         .then(function (result) {
-            var result = result.dataValues;
+            if (result) result = result.dataValues;
             callback(null, result);
         })
         .catch(function (err) {
