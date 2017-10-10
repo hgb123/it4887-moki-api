@@ -19,37 +19,54 @@ app.use(body_parser.json({
 var mysql_data_context = require("../../repository/mysql-context")(config.mysql);
 
 // Repository
+var UserRepository = null;
 var ProductRepository = require("../../repository/product-repository");
 var BrandRepository = require("../../repository/brand-repository");
 var CategoryRepository = require("../../repository/category-repository");
+var ProductCategoryRepository = require("../../repository/product-category-repository");
+var LikeRepository = require("../../repository/like-repository");
+var CommentRepository = require("../../repository/comment-repository");
+
+var user_repository = null;
 var product_repository = new ProductRepository(mysql_data_context);
 var brand_repository = new BrandRepository(mysql_data_context);
 var category_repository = new CategoryRepository(mysql_data_context);
+var product_category_repository = new ProductCategoryRepository(mysql_data_context);
+var like_repository = new LikeRepository(mysql_data_context);
+var comment_repository = new CommentRepository(mysql_data_context);
+
 
 // Service
 var ProductService = require("../../services/product-services");
 var BrandService = require("../../services/brand-services");
 var CategoryService = require("../../services/category-services");
-var product_service = new ProductService(product_repository);
+var CommentService = require("../../services/comment-services");
+
+var product_service = new ProductService(product_repository, category_repository, product_category_repository, brand_repository, like_repository, comment_repository, user_repository);
 var brand_service = new BrandService(brand_repository);
 var category_service = new CategoryService(category_repository);
+var comment_service = new CommentService(comment_repository, user_repository);
+
 
 // Controller
 var ProductController = require("./controllers/product-controller");
 var BrandController = require("./controllers/brand-controller");
 var CategoryController = require("./controllers/category-controller");
+var CommentController = require("./controllers/comment-controller");
+
 var product_controller = new ProductController(product_service);
 var brand_controller = new BrandController(brand_service);
 var category_controller = new CategoryController(category_service);
+var comment_controller = new CommentController(comment_service);
+
 
 /* ===== End Components setup  ===== */
 
 // require("./routes/authen-routes")(app, authen_controller);
 // require("./routes/user-routes")(app, user_controller);
-// require("./routes/product-routes")(app, product_controller);
+require("./routes/product-routes")(app, product_controller, comment_controller);
 require("./routes/brand-routes")(app, brand_controller);
 require("./routes/category-routes")(app, category_controller);
-// require("./routes/order-routes")(app, user_controller);
 
 app.use(function (err, req, res, next) {
     console.error(new Date());
