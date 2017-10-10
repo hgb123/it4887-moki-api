@@ -37,8 +37,8 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.TEXT,
             allowNull: false
         },
-        brand_id: {
-            type: DataTypes.INTEGER,
+        brand: {
+            type: DataType.STRING(50),
             allowNull: true
         },
         weight: {
@@ -54,7 +54,7 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: true
         },
         ship_from: {
-            type: DataTypes.STRING(200),
+            type: DataType.STRING(200),
             allowNull: true
         },
         is_banned: {

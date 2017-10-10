@@ -60,9 +60,9 @@ ProductRepository.prototype.find_by = function (condition, callback) {
 }
 
 ProductRepository.prototype.create = function (product_obj, callback) {
-    var product = stringify_product(product_obj);
+    var plan = stringify_product();
     dependencies.Product
-        .create(product)
+        .create(plan)
         .then(function (result) {
             var result = parse_product(result);
             callback(null, result);
