@@ -87,7 +87,7 @@ module.exports = function (app, product_controller, comment_controller) {
 }
 
 function get_client_input(req, res, next) {
-    var product_props = ["name", "price", "discount_percent", "condition", "images", "video", "weight", "dimension", "is_banned"];
+    var product_props = ["name", "price", "discount_percent", "condition", "images", "video", "category_ids", "brand_id", "weight", "size", "ship_from"];
     req.product_obj = {};
     product_props.forEach(function (prop) {
         if (req.body.hasOwnProperty("product_" + prop)) req.product_obj[prop] = req.body["product_" + prop];

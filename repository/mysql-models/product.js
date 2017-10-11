@@ -49,10 +49,6 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING(50),
             allowNull: false
         },
-        dimension: {
-            type: DataTypes.STRING(50),
-            allowNull: true
-        },
         ship_from: {
             type: DataTypes.STRING(200),
             allowNull: true
