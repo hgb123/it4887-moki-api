@@ -48,37 +48,66 @@ ProductService.prototype.create = function (user_id, product_obj, callback) {
     var product_obj = new Product(product_obj);
     async.waterfall([
         // Create product
-        function(cb) {
+        function (cb) {
             dependencies.product_repository.create(product_obj, function (err, product) {
                 cb(err, product);
             });
         },
         // Add to category(ies)
-        function(product, cb) {
-            async.each(category_ids, function(category_id, e_cb) {
+        function (product, cb) {
+            async.each(category_ids, function (category_id, e_cb) {
                 var prod_cat_obj = {
                     product_id: product.id,
                     category_id: category_id
                 }
-                dependencies.product_category_repository.create(prod_cat_obj, function(err, created) {
+                dependencies.product_category_repository.create(prod_cat_obj, function (err, created) {
                     e_cb(err, created);
                 });
-            }, function(err) {
+            }, function (err) {
                 cb(err, product);
             });
         }
-    ], function(err, product){
+    ], function (err, product) {
         if (err) return callback(err);
 
         product.category_ids = category_ids;
         return callback(null, product);
     });
-    
+
 }
 
 ProductService.prototype.update = function (product_obj, callback) {
     var condition = { id: product_obj.id };
-    dependencies.product_repository.update(condition, product_obj, function (err, updated) {
+    var category_ids = product_obj.category_ids;
+    var product_id = product_obj.id;
+    async.waterfall([
+        // Update product
+        function (cb) {
+            dependencies.product_repository.update(condition, product_obj, function (err, updated) {
+                cb(err, updated);
+            });
+        },
+        // Remove old and add new category(ies)
+        function (updated, cb) {
+            if (!updated) cb(null, false);
+            else {
+                dependencies.product_category_repository.delete({ product_id: product_id }, function (err, deleted) {
+                    if (err) cb(err);
+                    else async.each(category_ids, function (category_id, e_cb) {
+                        var prod_cat_obj = {
+                            product_id: product_id,
+                            category_id: category_id
+                        }
+                        dependencies.product_category_repository.create(prod_cat_obj, function (err, created) {
+                            e_cb(err, created);
+                        });
+                    }, function (err) {
+                        cb(err, updated);
+                    });
+                });
+            }
+        }
+    ], function (err, updated) {
         if (err) return callback(err);
 
         if (!updated) return callback({ type: "Something is wrong." });

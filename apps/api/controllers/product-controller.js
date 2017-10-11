@@ -45,11 +45,11 @@ ProductController.prototype.create = function (req, res, next) {
 
 ProductController.prototype.update = function (req, res, next) {
     req.product_obj.id = req.params.product_id;
-    dependencies.product_service.update(req.product_obj, function (err, product) {
+    dependencies.product_service.update(req.product_obj, function (err, product_updated) {
         if (err) {
             next(err);
         } else {
-            res.product = product;
+            res.product_updated = product_updated;
             next();
         }
     });
