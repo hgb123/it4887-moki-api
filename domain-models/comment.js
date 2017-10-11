@@ -1,4 +1,4 @@
-var object_assign = require('object-assign');
+var object_assign = require("object-assign");
 
 var Comment = function(params) {
     var self = this;

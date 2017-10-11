@@ -1,5 +1,6 @@
 var async = require("async");
 var config = require("../config/config");
+var Product = require("../domain-models/product");
 var dependencies = {
     product_repository: null,
     category_repository: null,
@@ -42,12 +43,37 @@ ProductService.prototype.retrieve_one = function (id, callback) {
 }
 
 ProductService.prototype.create = function (user_id, product_obj, callback) {
+    var category_ids = product_obj.category_ids;
     product_obj.user_id = user_id;
-    dependencies.product_repository.create(product_obj, function (err, product) {
+    var product_obj = new Product(product_obj);
+    async.waterfall([
+        // Create product
+        function(cb) {
+            dependencies.product_repository.create(product_obj, function (err, product) {
+                cb(err, product);
+            });
+        },
+        // Add to category(ies)
+        function(product, cb) {
+            async.each(category_ids, function(category_id, e_cb) {
+                var prod_cat_obj = {
+                    product_id: product.id,
+                    category_id: category_id
+                }
+                dependencies.product_category_repository.create(prod_cat_obj, function(err, created) {
+                    e_cb(err, created);
+                });
+            }, function(err) {
+                cb(err, product);
+            });
+        }
+    ], function(err, product){
         if (err) return callback(err);
 
+        product.category_ids = category_ids;
         return callback(null, product);
     });
+    
 }
 
 ProductService.prototype.update = function (product_obj, callback) {
