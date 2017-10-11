@@ -116,11 +116,35 @@ ProductService.prototype.update = function (product_obj, callback) {
 }
 
 ProductService.prototype.delete = function (id, callback) {
-    var condition = { id: id };
-    dependencies.product_repository.delete(condition, function (err, deleted) {
+    async.series([
+        // Delete product
+        function (cb) {
+            dependencies.product_repository.delete({ id: id }, function (err, deleted) {
+                cb(err, deleted);
+            });
+        },
+        // Delete in category(ies)
+        function (cb) {
+            dependencies.product_category_repository.delete({ product_id: id }, function (err, deleted) {
+                cb(err, deleted);
+            });
+        },
+        // Delete like(s)
+        function (cb) {
+            dependencies.like_repository.delete({ product_id: id }, function (err, deleted) {
+                cb(err, deleted);
+            });
+        },
+        // Delete comment(s)
+        function (cb) {
+            dependencies.comment_repository.delete({ product_id: id }, function (err, deleted) {
+                cb(err, deleted);
+            });
+        }
+    ], function (err, deleted) {
         if (err) return callback(err);
 
-        return callback(null, {});
+        return callback(null, { message: "Product is successfully removed." });
     });
 }
 
