@@ -9,6 +9,7 @@ var Product = function(params) {
         condition: 0,
         images: [],
         video: [],
+        description: [],
         brand_id: null,
         weight: null,
         size: null,
@@ -23,6 +24,7 @@ var Product = function(params) {
     self.condition = props.condition;
     self.images = props.images;
     self.video = props.video;
+    self.description = props.description;
     self.brand_id = props.brand_id;
     self.weight = props.weight;
     self.size = props.size;

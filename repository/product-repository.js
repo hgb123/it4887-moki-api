@@ -15,6 +15,7 @@ var parse_product = function (product) {
     var tmp = product;
     if (tmp.images) tmp.images = JSON.parse(tmp.images);
     if (tmp.video) tmp.video = JSON.parse(tmp.video);
+    if (tmp.description) tmp.description = JSON.parse(tmp.description);
     return tmp.dataValues;
 }
 
@@ -24,6 +25,7 @@ var stringify_product = function (product) {
     var tmp = object_assign({}, product);
     if (tmp.images) tmp.images = JSON.stringify(tmp.images);
     if (tmp.video) tmp.video = JSON.stringify(tmp.video);
+    if (tmp.description) tmp.description = JSON.stringify(tmp.description);
     return tmp;
 }
 
