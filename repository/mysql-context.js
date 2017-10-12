@@ -3,6 +3,7 @@ var Sequelize = require("sequelize");
 var DataContext = function(config) {
     var sequelize = new Sequelize(config.database, config.username, config.password, config);
 
+    var Block = sequelize.import("./mysql-models/block");
     var Product = sequelize.import("./mysql-models/product");
     var Like = sequelize.import("./mysql-models/like");
     var Comment = sequelize.import("./mysql-models/comment");
@@ -11,6 +12,7 @@ var DataContext = function(config) {
     var ProductCategory = sequelize.import("./mysql-models/product-category");
 
     return {
+        Block: Block,
         Product: Product,
         Like: Like,
         Comment: Comment,
