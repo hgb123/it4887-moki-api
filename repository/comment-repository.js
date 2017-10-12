@@ -26,6 +26,19 @@ CommentRepository.prototype.find_all = function (condition, page, limit, callbac
         });
 }
 
+CommentRepository.prototype.count = function (condition, callback) {
+    dependencies.Comment
+        .count({
+            where: condition
+        })
+        .then(function (result) {
+            callback(null, result);
+        })
+        .catch(function (err) {
+            callback(err, null);
+        });
+}
+
 CommentRepository.prototype.find_by = function (condition, callback) {
     dependencies.Comment
         .findOne({

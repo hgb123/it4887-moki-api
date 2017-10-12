@@ -26,6 +26,19 @@ LikeRepository.prototype.find_all = function (condition, page, limit, callback) 
         });
 }
 
+LikeRepository.prototype.count = function (condition, callback) {
+    dependencies.Like
+        .count({
+            where: condition
+        })
+        .then(function (result) {
+            callback(null, result);
+        })
+        .catch(function (err) {
+            callback(err, null);
+        });
+}
+
 LikeRepository.prototype.find_by = function (condition, callback) {
     dependencies.Like
         .findOne({
