@@ -8,10 +8,11 @@ var dependencies = {
     brand_repository: null,
     like_repository: null,
     comment_repository: null,
-    user_repository: null
+    user_repository: null,
+    block_repository: null
 }
 
-var ProductService = function (product_repository, category_repository, product_category_repository, brand_repository, like_repository, comment_repository, user_repository) {
+var ProductService = function (product_repository, category_repository, product_category_repository, brand_repository, like_repository, comment_repository, user_repository, block_repository) {
     dependencies.product_repository = product_repository;
     dependencies.category_repository = category_repository;
     dependencies.product_category_repository = product_category_repository;
@@ -19,26 +20,30 @@ var ProductService = function (product_repository, category_repository, product_
     dependencies.like_repository = like_repository;
     dependencies.comment_repository = comment_repository;
     dependencies.user_repository = user_repository;
+    dependencies.block_repository = block_repository;
 }
 
-ProductService.prototype.retrieve_all = function (category_id, page, limit, callback) {
+ProductService.prototype.retrieve_all = function (user_id, condition, page, limit, callback) {
     // TODO: case when category_id || brand != null
 
-    dependencies.product_repository.find_all({}, page, limit, function (err, products) {
+    dependencies.product_repository.find_all(condition, page, limit, function (err, products) {
         if (err) return callback(err);
 
         return callback(null, { products });
     });
 }
 
-ProductService.prototype.retrieve_one = function (id, callback) {
+ProductService.prototype.retrieve_one = function (user_id, id, callback) {
     var condition = { id: id };
     dependencies.product_repository.find_by(condition, function (err, product) {
         if (err) return callback(err);
 
         if (!product) return callback({ type: "Not Found" });
-        product = add_more_properties(product);
-        return callback(null, { product });
+        add_more_properties(user_id, product, function (err, product) {
+            if (err) return callback(err);
+
+            return callback(null, { product });
+        });
     });
 }
 
@@ -182,11 +187,67 @@ ProductService.prototype.like = function (user_id, product_id, callback) {
     });
 }
 
-function add_more_properties(product) {
-    async.parallel({
+function add_more_properties(user_id, product, callback) {
+    async.series([
+        // Count like
+        function (cb) {
+            var condition = { product_id: product.id };
+            dependencies.like_repository.count(condition, function (err, likes) {
+                cb(err, likes);
+            });
+        },
+        // Count comment
+        function (cb) {
+            var condition = { product_id: product.id };
+            dependencies.comment_repository.count(condition, function (err, comments) {
+                cb(err, comments);
+            });
+        },
+        // Check liked
+        function (cb) {
+            if (user_id) {
+                var condition = {
+                    product_id: product.id,
+                    user_id: user_id
+                };
+                dependencies.like_repository.find_by(condition, function (err, like) {
+                    cb(err, like != null);
+                });
+            } else cb(null, null);
+        },
+        // Check blocked
+        function (cb) {
+            if (user_id) {
+                var condition = {
+                    $or: [
+                        { user_id1: user_id, user_id2: product.user_id },
+                        { user_id2: user_id, user_id1: product.user_id }
+                    ]
+                }
+                dependencies.block_repository.find_all(condition, function (err, blocks) {
+                    cb(err, blocks.length > 0);
+                });
+            } else cb(null, null);
+        },
+        // Check editable
+        function (cb) {
+            cb(null, user_id && user_id == product.user_id);
+        },
+        // Get seller info
+        function (cb) {
+            // TODO: fill info
+            cb(null, null);
+        }
+    ], function (err, results) {
+        if (err) return callback(err);
 
-    }, function (err, results) {
-
+        product.likes = results[0];
+        product.comments = results[1];
+        product.is_liked = results[2];
+        product.is_blocked = results[3];
+        product.is_editable = results[4];
+        product.seller = results[5];
+        return callback(null, product);
     });
 }
 

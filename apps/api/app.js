@@ -20,6 +20,7 @@ var mysql_data_context = require("../../repository/mysql-context")(config.mysql)
 
 // Repository
 var UserRepository = null;
+var BlockRepository = require("../../repository/block-repository");
 var ProductRepository = require("../../repository/product-repository");
 var BrandRepository = require("../../repository/brand-repository");
 var CategoryRepository = require("../../repository/category-repository");
@@ -28,6 +29,7 @@ var LikeRepository = require("../../repository/like-repository");
 var CommentRepository = require("../../repository/comment-repository");
 
 var user_repository = null;
+var block_repository  = new BlockRepository(mysql_data_context);
 var product_repository = new ProductRepository(mysql_data_context);
 var brand_repository = new BrandRepository(mysql_data_context);
 var category_repository = new CategoryRepository(mysql_data_context);
@@ -42,7 +44,7 @@ var BrandService = require("../../services/brand-services");
 var CategoryService = require("../../services/category-services");
 var CommentService = require("../../services/comment-services");
 
-var product_service = new ProductService(product_repository, category_repository, product_category_repository, brand_repository, like_repository, comment_repository, user_repository);
+var product_service = new ProductService(product_repository, category_repository, product_category_repository, brand_repository, like_repository, comment_repository, user_repository, block_repository);
 var brand_service = new BrandService(brand_repository);
 var category_service = new CategoryService(category_repository);
 var comment_service = new CommentService(comment_repository, user_repository);

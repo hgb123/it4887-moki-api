@@ -22,7 +22,8 @@ ProductController.prototype.retrieve_all = function (req, res, next) {
 }
 
 ProductController.prototype.retrieve_one = function (req, res, next) {
-    dependencies.product_service.retrieve_one(req.params.product_id, function (err, product) {
+    var user_id = req.authen_user ? req.authen_user.id : null;
+    dependencies.product_service.retrieve_one(user_id, req.params.product_id, function (err, product) {
         if (err) {
             next(err);
         } else {

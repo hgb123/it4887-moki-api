@@ -10,6 +10,10 @@ module.exports = function (app, product_controller, comment_controller) {
     );
 
     app.get("/api/products/:product_id",
+        function (req, res, next) {
+            if (req.headers["authorization"]) token_middleware.verify(req, res, next);
+            else next();
+        },
         product_controller.retrieve_one,
         function (req, res) {
             return res.status(200).send(res.product);
@@ -52,14 +56,14 @@ module.exports = function (app, product_controller, comment_controller) {
 
     app.post("/api/products/:product_id/comments",
         token_middleware.verify,
-        function(req, res, next) {
+        function (req, res, next) {
             var comment_obj = {
                 user_id: req.authen_user.id,
                 product_id: req.params.product_id,
                 content: req.body.comment_content
             }
             req.comment_obj = comment_obj;
-            
+
             next();
         },
         comment_controller.create,
