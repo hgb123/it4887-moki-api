@@ -8,6 +8,7 @@ module.exports = {
         dialect: "mysql"
     },
     authen: {
-        secret: "localtest"
+        secret: "localtest",
+        token_expires_in: "2h"
     }
 }
