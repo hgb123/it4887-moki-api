@@ -38,6 +38,78 @@ UserService.prototype.update_information = function (user_obj, callback) {
     });
 }
 
+UserService.prototype.retrieve_follow = function (is_getting_followers, retriever_id, id, page, limit, callback) {
+    var self = this;
+    async.waterfall([
+        function (cb) {
+            var condition = is_getting_followers ? { user_id2: id } : { user_id1: id };
+            dependencies.follow_repository.find_all(condition, page, limit, function (err, follows) {
+                cb(err, follows);
+            });
+        },
+        function (follows, cb) {
+            var f_ids = follows.map(function (follow) {
+                return is_getting_followers ? follow.user_id1 : follow.user_id2;
+            });
+            var users = [];
+            async.each(f_ids, function (f_id, e_cb) {
+                self.retrieve_information(retriever_id, f_id, function(err, res){
+                    if (err) e_cb(err);
+                    else {
+                        var user = res.user;
+                        delete user.is_online;
+                        delete user.phone_number;
+                        delete user.address;
+                        delete user.is_editable;
+                        users.push(user);
+                        e_cb();
+                    }
+                });
+            }, function (err) {
+                return cb(err, users);
+            });
+        }
+    ], function (err, users) {
+        if (err) return callback(err);
+
+        return callback(null, { users });
+    });
+}
+
+UserService.prototype.follow = function (follower_id, id, callback) {
+    var condition = {
+        user_id1: follower_id,
+        user_id2: id
+    };
+    async.waterfall([
+        function (cb) {
+            // Check if followed yet
+            dependencies.follow_repository.find_by(condition, function (err, res) {
+                cb(err, res);
+            });
+        },
+        function (followed, cb) {
+            if (followed) {
+                // Unfollow
+                dependencies.follow_repository.delete(condition, function (err, deleted) {
+                    cb(err, false);
+                });
+            } else {
+                // Follow
+                dependencies.follow_repository.create(condition, function (err, created) {
+                    cb(err, true);
+                });
+            }
+        }
+    ], function (err, followed) {
+        if (err) return callback(err);
+
+        return callback(null, {
+            message: "User is successfully " + (followed ? "followed." : "unfollowed.")
+        });
+    });
+}
+
 function add_more_properties(retriever_id, id, user, callback) {
     // Default supplement props for both guest and user 
     user.is_followed = null;

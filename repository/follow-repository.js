@@ -8,10 +8,12 @@ var FollowRepository = function (db_context) {
     dependencies.Follow = db_context.Follow
 }
 
-FollowRepository.prototype.find_all = function (condition, callback) {
+FollowRepository.prototype.find_all = function (condition, page, limit, callback) {
     dependencies.Follow
         .findAll({
             where: condition,
+            limit: limit,
+            offset: page * limit
         })
         .then(function (result) {
             for (var i = 0; i < result.length; i++) {

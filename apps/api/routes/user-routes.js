@@ -22,21 +22,30 @@ module.exports = function (app, user_controller) {
     );
 
     app.get("/users/:user_id/followers",
-        // user_controller.retrieve_followers,
+        function (req, res, next) {
+            if (req.headers["authorization"]) token_middleware.verify(req, res, next);
+            else next();
+        },
+        user_controller.retrieve_followers,
         function (req, res) {
-            return res.status(200).send(res.followers);
+            return res.status(200).send(res.users);
         }
     );
 
     app.get("/users/:user_id/following",
-        // user_controller.retrieve_following,
+        function (req, res, next) {
+            if (req.headers["authorization"]) token_middleware.verify(req, res, next);
+            else next();
+        },
+        user_controller.retrieve_following,
         function (req, res) {
-            return res.status(200).send(res.following);
+            return res.status(200).send(res.users);
         }
     );
 
     app.post("/users/:user_id/follow",
-        // user_controller.follow,
+        token_middleware.verify,
+        user_controller.follow,
         function (req, res) {
             return res.status(201).send(res.user_followed);
         }
