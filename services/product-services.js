@@ -83,6 +83,7 @@ ProductService.prototype.create = function (user_id, product_obj, callback) {
 
 ProductService.prototype.update = function (product_obj, callback) {
     var condition = { id: product_obj.id };
+    delete product_obj.id;
     var category_ids = product_obj.category_ids;
     var product_id = product_obj.id;
     async.waterfall([
