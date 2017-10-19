@@ -1,49 +1,68 @@
+var token_middleware = require("../middlewares/token");
+
 module.exports = function (app, user_controller) {
-    app.post("/search",
-
+    app.get("/users/:user_id",
+        function (req, res, next) {
+            if (req.headers["authorization"]) token_middleware.verify(req, res, next);
+            else next();
+        },
+        user_controller.get_information,
+        function (req, res) {
+            return res.status(200).send(res.user);
+        }
     );
 
-    app.post("/save_search",
-
+    app.put("/users/:user_id",
+        token_middleware.verify,
+        get_client_input,
+        user_controller.update_information,
+        function (req, res) {
+            return res.status(200).send(res.user_updated);
+        }
     );
 
-    app.post("/get_list_saved_search",
-
+    app.get("/users/:user_id/followers",
+        // user_controller.get_followers,
+        function (req, res) {
+            return res.status(200).send(res.followers);
+        }
     );
 
-    app.post("/get_my_likes",
-
+    app.get("/users/:user_id/following",
+        // user_controller.get_following,
+        function (req, res) {
+            return res.status(200).send(res.following);
+        }
     );
 
-    app.post("/get_user_listings",
-
+    app.post("/users/:user_id/follow",
+        // user_controller.follow,
+        function (req, res) {
+            return res.status(201).send(res.user_followed);
+        }
     );
 
-    app.post("/get_notification",
-
+    app.get("/users/:user_id/blocked",
+        // user_controller.get_blocked,
+        function (req, res) {
+            return res.status(200).send(res.blocked);
+        }
     );
 
-    app.post("/get_user_info",
-
+    app.post("/users/:user_id/block",
+        // user_controller.block,
+        function (req, res) {
+            return res.status(201).send(res.user_blocked);
+        }
     );
+}
 
-    app.post("/set_user_info",
+function get_client_input(req, res, next) {
+    var user_props = ["name", "is_online", "avatar", "phone_number", "address"];
+    req.user_obj = {};
+    user_props.forEach(function (prop) {
+        if (req.body.hasOwnProperty("user_" + prop)) req.user_obj[prop] = req.body["user_" + prop];
+    });
 
-    );
-
-    app.post("/get_list_followed",
-
-    );
-
-    app.post("/get_list_following",
-
-    );
-
-    app.post("/get_push_setting",
-
-    );
-
-    app.post("/set_push_setting",
-
-    );
+    next();
 }
