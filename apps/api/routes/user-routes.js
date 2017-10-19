@@ -1,7 +1,7 @@
 var token_middleware = require("../middlewares/token");
 
 module.exports = function (app, user_controller) {
-    app.get("/users/:user_id",
+    app.get("/api/users/:user_id",
         function (req, res, next) {
             if (req.headers["authorization"]) token_middleware.verify(req, res, next);
             else next();
@@ -12,7 +12,7 @@ module.exports = function (app, user_controller) {
         }
     );
 
-    app.put("/users/:user_id",
+    app.put("/api/users/:user_id",
         token_middleware.verify,
         get_client_input,
         user_controller.update_information,
@@ -21,7 +21,7 @@ module.exports = function (app, user_controller) {
         }
     );
 
-    app.get("/users/:user_id/followers",
+    app.get("/api/users/:user_id/followers",
         function (req, res, next) {
             if (req.headers["authorization"]) token_middleware.verify(req, res, next);
             else next();
@@ -32,7 +32,7 @@ module.exports = function (app, user_controller) {
         }
     );
 
-    app.get("/users/:user_id/following",
+    app.get("/api/users/:user_id/following",
         function (req, res, next) {
             if (req.headers["authorization"]) token_middleware.verify(req, res, next);
             else next();
@@ -43,7 +43,7 @@ module.exports = function (app, user_controller) {
         }
     );
 
-    app.post("/users/:user_id/follow",
+    app.post("/api/users/:user_id/follow",
         token_middleware.verify,
         user_controller.follow,
         function (req, res) {
@@ -51,14 +51,14 @@ module.exports = function (app, user_controller) {
         }
     );
 
-    app.get("/users/:user_id/blocked",
+    app.get("/api/users/:user_id/blocked",
         // user_controller.retrieve_blocked,
         function (req, res) {
             return res.status(200).send(res.blocked);
         }
     );
 
-    app.post("/users/:user_id/block",
+    app.post("/api/users/:user_id/block",
         // user_controller.block,
         function (req, res) {
             return res.status(201).send(res.user_blocked);
