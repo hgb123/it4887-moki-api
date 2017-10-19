@@ -4,6 +4,7 @@ var DataContext = function(config) {
     var sequelize = new Sequelize(config.database, config.username, config.password, config);
 
     var User = sequelize.import("./mysql-models/user");
+    var Follow = sequelize.import("./mysql-models/follow");
     var Block = sequelize.import("./mysql-models/block");
     var Product = sequelize.import("./mysql-models/product");
     var Like = sequelize.import("./mysql-models/like");
@@ -14,6 +15,7 @@ var DataContext = function(config) {
 
     return {
         User: User,
+        Follow: Follow,
         Block: Block,
         Product: Product,
         Like: Like,
