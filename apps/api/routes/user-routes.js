@@ -58,7 +58,7 @@ module.exports = function (app, user_controller) {
 }
 
 function get_client_input(req, res, next) {
-    var user_props = ["name", "is_online", "avatar", "phone_number", "address"];
+    var user_props = ["user_name", "is_online", "avatar", "phone_number", "address"];
     req.user_obj = {};
     user_props.forEach(function (prop) {
         if (req.body.hasOwnProperty("user_" + prop)) req.user_obj[prop] = req.body["user_" + prop];

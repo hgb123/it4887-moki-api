@@ -27,7 +27,16 @@ UserService.prototype.retrieve_information = function (retriever_id, id, callbac
     });
 }
 
+UserService.prototype.update_information = function (user_obj, callback) {
+    var condition = { id: user_obj.id };
+    delete user_obj.id;
+    dependencies.user_repository.update(condition, user_obj, function (err, updated) {
+        if (err) return callback(err);
 
+        if (!updated) return callback({ type: "Something is wrong." });
+        return callback(null, { message: "User's information is successfully updated." });
+    });
+}
 
 function add_more_properties(retriever_id, id, user, callback) {
     // Default supplement props for both guest and user 

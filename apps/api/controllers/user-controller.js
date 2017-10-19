@@ -20,11 +20,11 @@ UserController.prototype.retrieve_information = function (req, res, next) {
 
 UserController.prototype.update_information = function (req, res, next) {
     req.user_obj.id = req.authen_user.id;
-    dependencies.user_service.update_information(user_obj, function (err, user_updated) {
+    dependencies.user_service.update_information(req.user_obj, function (err, user_updated) {
         if (err) {
             next(err);
         } else {
-            res.user_updated;
+            res.user_updated = user_updated;
             next();
         }
     });
