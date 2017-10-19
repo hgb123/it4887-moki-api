@@ -6,7 +6,7 @@ module.exports = function (app, user_controller) {
             if (req.headers["authorization"]) token_middleware.verify(req, res, next);
             else next();
         },
-        user_controller.get_information,
+        user_controller.retrieve_information,
         function (req, res) {
             return res.status(200).send(res.user);
         }
@@ -22,14 +22,14 @@ module.exports = function (app, user_controller) {
     );
 
     app.get("/users/:user_id/followers",
-        // user_controller.get_followers,
+        // user_controller.retrieve_followers,
         function (req, res) {
             return res.status(200).send(res.followers);
         }
     );
 
     app.get("/users/:user_id/following",
-        // user_controller.get_following,
+        // user_controller.retrieve_following,
         function (req, res) {
             return res.status(200).send(res.following);
         }
@@ -43,7 +43,7 @@ module.exports = function (app, user_controller) {
     );
 
     app.get("/users/:user_id/blocked",
-        // user_controller.get_blocked,
+        // user_controller.retrieve_blocked,
         function (req, res) {
             return res.status(200).send(res.blocked);
         }

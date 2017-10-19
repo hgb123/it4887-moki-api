@@ -27,6 +27,8 @@ UserService.prototype.retrieve_information = function (retriever_id, id, callbac
     });
 }
 
+
+
 function add_more_properties(retriever_id, id, user, callback) {
     // Default supplement props for both guest and user 
     user.is_followed = null;

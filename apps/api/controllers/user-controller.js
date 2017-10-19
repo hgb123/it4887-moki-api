@@ -6,7 +6,7 @@ var UserController = function (user_service) {
     dependencies.user_service = user_service;
 }
 
-UserController.prototype.get_information = function (req, res, next) {
+UserController.prototype.retrieve_information = function (req, res, next) {
     var retriever_id = req.authen_user ? req.authen_user.id : null;
     dependencies.user_service.retrieve_information(retriever_id, req.params.user_id, function (err, user) {
         if (err) {
