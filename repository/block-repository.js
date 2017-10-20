@@ -8,10 +8,12 @@ var BlockRepository = function (db_context) {
     dependencies.Block = db_context.Block
 }
 
-BlockRepository.prototype.find_all = function (condition, callback) {
+BlockRepository.prototype.find_all = function (condition, page, limit, callback) {
     dependencies.Block
         .findAll({
             where: condition,
+            limit: limit,
+            offset: page * limit
         })
         .then(function (result) {
             for (var i = 0; i < result.length; i++) {

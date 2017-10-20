@@ -225,7 +225,7 @@ function add_more_properties(user_id, product, callback) {
                         { user_id2: user_id, user_id1: product.user_id }
                     ]
                 }
-                dependencies.block_repository.find_all(condition, function (err, blocks) {
+                dependencies.block_repository.find_all(condition, 0, 2, function (err, blocks) {
                     cb(err, blocks.length > 0);
                 });
             } else cb(null, null);
