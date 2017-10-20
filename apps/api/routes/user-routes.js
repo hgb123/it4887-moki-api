@@ -52,14 +52,16 @@ module.exports = function (app, user_controller) {
     );
 
     app.get("/api/users/:user_id/blocked",
-        // user_controller.retrieve_blocked,
+        token_middleware.verify,
+        user_controller.retrieve_blocked,
         function (req, res) {
-            return res.status(200).send(res.blocked);
+            return res.status(200).send(res.users);
         }
     );
 
     app.post("/api/users/:user_id/block",
-        // user_controller.block,
+        token_middleware.verify,
+        user_controller.block,
         function (req, res) {
             return res.status(201).send(res.user_blocked);
         }

@@ -71,4 +71,29 @@ UserController.prototype.follow = function (req, res, next) {
     });
 }
 
+UserController.prototype.retrieve_blocked = function(req, res, next) {
+    var retriever_id = req.authen_user ? req.authen_user.id : null;
+    var page = req.options.offset ? req.options.offset : req.options.skip;
+    var limit = req.options.limit;
+    dependencies.user_service.retrieve_block(retriever_id, req.params.user_id, page, limit, function (err, users) {
+        if (err) {
+            next(err);
+        } else {
+            res.users = users;
+            next();
+        }
+    });
+}
+
+UserController.prototype.block = function (req, res, next) {
+    dependencies.user_service.block(req.authen_user.id, req.params.user_id, function (err, user_blocked) {
+        if (err) {
+            next(err);
+        } else {
+            res.user_blocked = user_blocked;
+            next();
+        }
+    });
+}
+
 module.exports = UserController;

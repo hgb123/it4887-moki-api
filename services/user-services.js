@@ -53,7 +53,7 @@ UserService.prototype.retrieve_follow = function (is_getting_followers, retrieve
             });
             var users = [];
             async.each(f_ids, function (f_id, e_cb) {
-                self.retrieve_information(retriever_id, f_id, function(err, res){
+                self.retrieve_information(retriever_id, f_id, function (err, res) {
                     if (err) e_cb(err);
                     else {
                         var user = res.user;
@@ -106,6 +106,72 @@ UserService.prototype.follow = function (follower_id, id, callback) {
 
         return callback(null, {
             message: "User is successfully " + (followed ? "followed." : "unfollowed.")
+        });
+    });
+}
+
+UserService.prototype.retrieve_block = function (retriever_id, id, page, limit, callback) {
+    if (retriever_id != id) return callback({ type: "Unauthorized" });
+
+    var self = this;
+    var condition = { user_id1: id };
+    dependencies.block_repository.find_all(condition, page, limit, function (err, blocks) {
+        if (err) return callback(err);
+
+        var b_ids = blocks.map(function (block) {
+            return block.user_id2;
+        });
+        var users = [];
+        async.each(b_ids, function (b_id, cb) {
+            self.retrieve_information(null, b_id, function (err, res) {
+                if (err) cb(err);
+                else {
+                    var user = {
+                        id: res.user.id,
+                        user_name: res.user.user_name
+                    }
+                    users.push(user);
+                    cb();
+                }
+            });
+        }, function (err) {
+            if (err) return callback(err);
+
+            return callback(null, { users });
+        });
+    });
+}
+
+UserService.prototype.block = function (blocker_id, id, callback) {
+    var condition = {
+        user_id1: blocker_id,
+        user_id2: id
+    };
+    async.waterfall([
+        function (cb) {
+            // Check if blocked yet
+            dependencies.block_repository.find_by(condition, function (err, res) {
+                cb(err, res);
+            });
+        },
+        function (blocked, cb) {
+            if (blocked) {
+                // Unblock
+                dependencies.block_repository.delete(condition, function (err, deleted) {
+                    cb(err, false);
+                });
+            } else {
+                // Follow
+                dependencies.block_repository.create(condition, function (err, created) {
+                    cb(err, true);
+                });
+            }
+        }
+    ], function (err, blocked) {
+        if (err) return callback(err);
+
+        return callback(null, {
+            message: "User is successfully " + (blocked ? "blocked." : "unblocked.")
         });
     });
 }
