@@ -1,7 +1,7 @@
 var token_middleware = require("../middlewares/token");
 
 module.exports = function (app, authen_controller) {
-    app.post("/signup",
+    app.post("/api/signup",
         authen_controller.signup,
         authen_controller.generate_token,
         function (req, res) {
@@ -9,7 +9,7 @@ module.exports = function (app, authen_controller) {
         }
     );
 
-    app.post("/login",
+    app.post("/api/login",
         authen_controller.login,
         authen_controller.generate_token,
         function (req, res) {
@@ -17,7 +17,7 @@ module.exports = function (app, authen_controller) {
         }
     );
 
-    app.post("/logout",
+    app.post("/api/logout",
         token_middleware.verify,
         authen_controller.logout,
         function (req, res) {
