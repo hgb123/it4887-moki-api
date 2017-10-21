@@ -236,8 +236,14 @@ function add_more_properties(user_id, product, callback) {
         },
         // Get seller info
         function (cb) {
-            // TODO: fill info
-            cb(null, null);
+            var condition = { id: product.user_id };
+            dependencies.user_repository.find_by(condition, function (err, user) {
+                cb(err, {
+                    id: user.id,
+                    name: user.user_name,
+                    avatar: user.avatar
+                });
+            });
         }
     ], function (err, results) {
         if (err) return callback(err);
