@@ -15,7 +15,25 @@ CommentService.prototype.retrieve_all = function (page, limit, callback) {
     dependencies.comment_repository.find_all({}, page, limit, function (err, comments) {
         if (err) return callback(err);
 
-        return callback(null, { comments });
+        async.each(comments, function (comment, cb) {
+            var condition = { id: comment.user_id };
+            dependencies.user_repository.find_by(condition, function (err, user) {
+                if (err) cb(err);
+                else {
+                    var poster = !user ? null : {
+                        id: user.id, 
+                        name: user.user_name,
+                        avatar: user.avatar
+                    };
+                    comment.poster = poster;
+                    cb();
+                }
+            });
+        }, function (err) {
+            if (err) return callback(err);
+
+            return callback(null, { comments });
+        });
     });
 }
 
