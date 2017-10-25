@@ -7,15 +7,19 @@ var ProductController = function (product_service) {
 }
 
 ProductController.prototype.retrieve_all = function (req, res, next) {
-    var category_id = req.body.category_id ? req.body.category_id : null;
+    var user_id = req.authen_user ? req.authen_user.id : null;
+    var brand_id = req.params.brand_id ? req.params.brand_id : null;
+    var category_id = req.params.category_id ? req.params.category_id : null;
     var page = req.options.offset ? req.options.offset : req.options.skip;
     var limit = req.options.limit;
 
-    dependencies.product_service.retrieve_all(category_id, page, limit, function (err, products) {
+    dependencies.product_service.retrieve_all(user_id, brand_id, category_id, page, limit, function (err, products) {
         if (err) {
             next(err);
         } else {
             res.products = products;
+            if (res.brand) res.brand.brand.products = products.products;
+            if (res.category) res.category.category.products = products.products;
             next();
         }
     });

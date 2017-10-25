@@ -79,8 +79,8 @@ var comment_controller = new CommentController(comment_service);
 require("./routes/authen-routes")(app, authen_controller);
 require("./routes/user-routes")(app, user_controller);
 require("./routes/product-routes")(app, product_controller, comment_controller);
-require("./routes/brand-routes")(app, brand_controller);
-require("./routes/category-routes")(app, category_controller);
+require("./routes/brand-routes")(app, brand_controller, product_controller);
+require("./routes/category-routes")(app, category_controller, product_controller);
 
 app.use(function (err, req, res, next) {
     console.error(new Date());

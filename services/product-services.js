@@ -23,13 +23,43 @@ var ProductService = function (product_repository, category_repository, product_
     dependencies.block_repository = block_repository;
 }
 
-ProductService.prototype.retrieve_all = function (user_id, condition, page, limit, callback) {
-    // TODO: case when category_id || brand != null
+ProductService.prototype.retrieve_all = function (user_id, brand_id, category_id, page, limit, callback) {
+    if (brand_id && category_id) return callback({ type: "Bad Request" });
+    async.waterfall([
+        function (cb) {
+            var condition = {};
+            cb(null, condition);
+        },
+        // Check if query by brand_id
+        function (condition, cb) {
+            if (brand_id != null) condition.brand_id = brand_id;
+            cb(null, condition);
+        },
+        // Check if query by category_id
+        function (condition, cb) {
+            if (category_id != null)
+                dependencies.product_category_repository.find_all({ category_id: category_id }, page, limit, function (err, prod_cats) {
+                    if (err) cb(err);
+                    else {
 
-    dependencies.product_repository.find_all(condition, page, limit, function (err, products) {
+                        var ids = prod_cats.map(function (prod_cat) {
+                            return prod_cat.product_id;
+                        });
+                        condition.id = { $in: ids };
+                        cb(null, condition);
+                    }
+                });
+            else cb(null, condition);
+
+        }
+    ], function (err, condition) {
         if (err) return callback(err);
 
-        return callback(null, { products });
+        dependencies.product_repository.find_all(condition, page, limit, function (err, products) {
+            if (err) return callback(err);
+
+            return callback(null, { products });
+        });
     });
 }
 
