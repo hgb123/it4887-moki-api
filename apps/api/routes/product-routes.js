@@ -13,6 +13,17 @@ module.exports = function (app, product_controller, comment_controller) {
         }
     );
 
+    app.get("/api/products/search",
+        function (req, res, next) {
+            if (req.headers["authorization"]) token_middleware.verify(req, res, next);
+            else next();
+        },
+        product_controller.retrieve_some,
+        function (req, res) {
+            return res.status(200).send(res.products);
+        }
+    );
+
     app.get("/api/products/:product_id",
         function (req, res, next) {
             if (req.headers["authorization"]) token_middleware.verify(req, res, next);

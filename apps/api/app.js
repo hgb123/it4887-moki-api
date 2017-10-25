@@ -5,7 +5,9 @@ var config = require("../../config/config");
 
 /* ===== Express setup ===== */
 var app = express();
+app.use(queryhandler.filter());
 app.use(queryhandler.pagination({ limit: 1000 }));
+app.use(queryhandler.sort());
 app.use(body_parser.urlencoded({ extended: false }));
 app.use(body_parser.json({
     verify: function (req, res, buf, encoding) {

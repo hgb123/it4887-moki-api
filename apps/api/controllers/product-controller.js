@@ -26,6 +26,26 @@ ProductController.prototype.retrieve_all = function (req, res, next) {
     });
 }
 
+ProductController.prototype.retrieve_some = function (req, res, next) {
+    var user_id = req.authen_user ? req.authen_user.id : null;
+    var condition = Object.keys(req.where).length ? req.where : {};
+    var order_by = req.options.sort;
+    var page = req.options.offset ? req.options.offset : req.options.skip;
+    var limit = req.options.limit;
+    if (order_by) order_by = Object.keys(order_by).map(function (key) {
+        return [key, order_by[key] == -1 ? "DESC" : "ASC"];
+    });
+
+    dependencies.product_service.retrieve_some(user_id, condition, order_by, page, limit, function (err, products) {
+        if (err) {
+            next(err);
+        } else {
+            res.products = products;
+            next();
+        }
+    });
+}
+
 ProductController.prototype.retrieve_one = function (req, res, next) {
     var user_id = req.authen_user ? req.authen_user.id : null;
     dependencies.product_service.retrieve_one(user_id, req.params.product_id, function (err, product) {

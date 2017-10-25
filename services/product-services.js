@@ -89,6 +89,61 @@ ProductService.prototype.retrieve_all = function (user_id, brand_id, category_id
     });
 }
 
+ProductService.prototype.retrieve_some = function(user_id, pre_condition, order_by, page, limit, callback) {
+    var condition = {};
+    if (pre_condition.keyword) condition.keyword = pre_condition.keyword;
+    async.waterfall([
+        // Check if query in price range
+        function (cb) {
+            if (pre_condition.min_price || pre_condition.max_price) condition.price = {};
+            if (pre_condition.min_price) condition.price = { $gte: pre_condition.min_price };
+            if (pre_condition.max_price) condition.price = { $lte: pre_condition.max_price };
+            cb(null, condition);
+        },
+        // Check if query by brand_id
+        function (condition, cb) {
+            if (pre_condition.brand_id) condition.brand_id = pre_condition.brand_id;
+            cb(null, condition);
+        },
+        // Check if query by category_id
+        function (condition, cb) {
+            if (pre_condition.category_id)
+                dependencies.product_category_repository.find_all({ category_id: pre_condition.category_id }, page, limit, function (err, prod_cats) {
+                    if (err) cb(err);
+                    else {
+                        var ids = prod_cats.map(function (prod_cat) {
+                            return prod_cat.product_id;
+                        });
+                        condition.id = { $in: ids };
+                        cb(null, condition);
+                    }
+                });
+            else cb(null, condition);
+        }
+    ], function (err, condition) {
+        if (err) return callback(err);
+
+        dependencies.product_repository.find_some(condition, order_by, page, limit, function(err, res) {
+            if (err) return callback(err);
+
+            var products = [];
+            async.each(res, function (p, cb) {
+                add_more_properties(user_id, p, function (err, p) {
+                    if (err) cb(err);
+                    else {
+                        products.push(p);
+                        cb();
+                    };
+                });
+            }, function (err) {
+                if (err) return callback(err);
+
+                return callback(null, { products });
+            });
+        });
+    });
+}
+
 ProductService.prototype.retrieve_one = function (user_id, id, callback) {
     var condition = { id: id };
     dependencies.product_repository.find_by(condition, function (err, product) {

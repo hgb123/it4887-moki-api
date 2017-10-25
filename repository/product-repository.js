@@ -47,6 +47,28 @@ ProductRepository.prototype.find_all = function (condition, page, limit, callbac
         });
 }
 
+ProductRepository.prototype.find_some = function (condition, order_by, page, limit, callback) {
+    var keyword = condition.keyword ? dependencies.db_context.sequelize.literal("MATCH (name) AGAINST('" + condition.keyword + "')") : null;
+    delete condition.keyword;
+    var condition = { $and: [keyword, condition] };
+    dependencies.Product
+        .findAll({
+            where: condition,
+            order: order_by,
+            limit: limit,
+            offset: page * limit
+        })
+        .then(function (result) {
+            for (var i = 0; i < result.length; i++) {
+                result[i] = parse_product(result[i]);
+            }
+            callback(null, result);
+        })
+        .catch(function (err) {
+            callback(err, null);
+        });
+}
+
 ProductRepository.prototype.find_by = function (condition, callback) {
     dependencies.Product
         .findOne({
