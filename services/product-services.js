@@ -23,7 +23,7 @@ var ProductService = function (product_repository, category_repository, product_
     dependencies.block_repository = block_repository;
 }
 
-ProductService.prototype.retrieve_all = function (user_id, brand_id, category_id, page, limit, callback) {
+ProductService.prototype.retrieve_all = function (user_id, brand_id, category_id, user_likes_id, page, limit, callback) {
     if (brand_id && category_id) return callback({ type: "Bad Request" });
     async.waterfall([
         function (cb) {
@@ -41,7 +41,6 @@ ProductService.prototype.retrieve_all = function (user_id, brand_id, category_id
                 dependencies.product_category_repository.find_all({ category_id: category_id }, page, limit, function (err, prod_cats) {
                     if (err) cb(err);
                     else {
-
                         var ids = prod_cats.map(function (prod_cat) {
                             return prod_cat.product_id;
                         });
@@ -50,15 +49,42 @@ ProductService.prototype.retrieve_all = function (user_id, brand_id, category_id
                     }
                 });
             else cb(null, condition);
-
-        }
+        },
+        // Check if query by user's likes
+        function (condition, cb) {
+            if (user_likes_id != null)
+                dependencies.like_repository.find_all({ user_id: user_likes_id }, page, limit, function (err, likes) {
+                    if (err) cb(err);
+                    else {
+                        var ids = likes.map(function (like) {
+                            return like.product_id;
+                        });
+                        condition.id = { $in: ids };
+                        cb(null, condition);
+                    }
+                });
+            else cb(null, condition);
+        },
     ], function (err, condition) {
         if (err) return callback(err);
 
-        dependencies.product_repository.find_all(condition, page, limit, function (err, products) {
+        dependencies.product_repository.find_all(condition, page, limit, function (err, res) {
             if (err) return callback(err);
 
-            return callback(null, { products });
+            var products = [];
+            async.each(res, function (p, cb) {
+                add_more_properties(user_id, p, function (err, p) {
+                    if (err) cb(err);
+                    else {
+                        products.push(p);
+                        cb();
+                    };
+                });
+            }, function (err) {
+                if (err) return callback(err);
+
+                return callback(null, { products });
+            });
         });
     });
 }

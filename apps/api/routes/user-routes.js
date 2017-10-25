@@ -1,6 +1,6 @@
 var token_middleware = require("../middlewares/token");
 
-module.exports = function (app, user_controller) {
+module.exports = function (app, user_controller, product_controller) {
     app.get("/api/users/:user_id",
         function (req, res, next) {
             if (req.headers["authorization"]) token_middleware.verify(req, res, next);
@@ -64,6 +64,17 @@ module.exports = function (app, user_controller) {
         user_controller.block,
         function (req, res) {
             return res.status(201).send(res.user_blocked);
+        }
+    );
+
+    app.get("/api/users/:user_id/likes",
+        function (req, res, next) {
+            if (req.headers["authorization"]) token_middleware.verify(req, res, next);
+            else next();
+        },
+        product_controller.retrieve_all,
+        function (req, res) {
+            return res.status(200).send(res.products);
         }
     );
 }
