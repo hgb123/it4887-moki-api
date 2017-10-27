@@ -15,6 +15,8 @@ app.use(body_parser.json({
     }
 }));
 /* ===== End Express setup ===== */
+var server = require("http").Server(app);
+var io = require("socket.io").listen(server);
 
 /* ===== Components setup ===== */
 // DataContext
@@ -107,9 +109,17 @@ app.use(function (err, req, res, next) {
 
 var port = config.port;
 var env = process.env.NODE_ENV
-app.listen(port, function () {
+server.listen(port, function () {
     console.log("Environment:", env);
     console.log("Server is listening on port:", port);
+});
+
+io.on("connection", function(socket) {
+    console.log("One client connected");
+
+    socket.on("disconnect", function() {
+        console.log("A client has disconnected");
+    });
 });
 
 module.exports = app;
