@@ -90,10 +90,16 @@ ConversationService.prototype.create = function (p_uid, n_uid, message, callback
 
 ConversationService.prototype.seen = function (p_uid, n_uid, callback) {
     // Set all message of relevant sender receiver to seen
-    
-    return callback(null, null);
+    var condition = {
+        sender_id: n_uid,
+        receiver_id: p_uid
+    };
+    var conversation_updated = { is_seen: true };
+    dependencies.conversation_repository.update_message(condition, conversation_updated, function (err, seen) {
+        if (err) return callback(err);
+
+        return callback(null, { message: "Conversation has been seen." });
+    });
 }
-
-
 
 module.exports = ConversationService;
