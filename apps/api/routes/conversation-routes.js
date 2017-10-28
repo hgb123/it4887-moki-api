@@ -1,7 +1,7 @@
 var token_middleware = require("../middlewares/token");
 
 module.exports = function (app, conversation_controller) {
-    app.get("/conversations",
+    app.get("/api/conversations",
         token_middleware.verify,
         conversation_controller.retrieve_list,
         function (req, res) {
@@ -9,7 +9,7 @@ module.exports = function (app, conversation_controller) {
         }
     );
 
-    app.get("/conversations/t/:user_id",
+    app.get("/api/conversations/t/:user_id",
         token_middleware.verify,
         conversation_controller.retrieve_all,
         function (req, res) {
@@ -17,7 +17,7 @@ module.exports = function (app, conversation_controller) {
         }
     );
 
-    app.post("/conversations/t/:user_id",
+    app.post("/api/conversations/t/:user_id",
         token_middleware.verify,
         conversation_controller.create,
         function (req, res) {
@@ -25,7 +25,7 @@ module.exports = function (app, conversation_controller) {
         }
     );
 
-    app.post("/conversations/t/:user_id/seen",
+    app.post("/api/conversations/t/:user_id/seen",
         token_middleware.verify,
         conversation_controller.seen,
         function (req, res) {

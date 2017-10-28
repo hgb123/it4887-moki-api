@@ -33,6 +33,7 @@ ConversationService.prototype.retrieve_list = function (p_uid, page, limit, call
         }, function (err) {
             if (err) return callback(err);
 
+            // TODO: get number of unseen message 
             return callback(null, { conversations_list });
         });
     });
@@ -48,24 +49,48 @@ ConversationService.prototype.retrieve_all = function (p_uid, n_uid, page, limit
     }
     dependencies.conversation_repository.find_all_message(condition, page, limit, function (err, conversations) {
         if (err) return callback(err);
-        conversations.sort(function(a, b) {
-            return a.created_at > b.created_at; 
+        conversations.sort(function (a, b) {
+            return a.created_at > b.created_at;
         });
 
-        return callback(null, { conversations });
         // TODO: set seen if page == 0
+        return callback(null, { conversations });
     });
 
 }
 
 ConversationService.prototype.create = function (p_uid, n_uid, message, callback) {
-    // Set all previous message to seen
-    // Set latest message in ChatList
-    return callback(null, null);
+    var conversation_obj = new Conversation({
+        sender_id: p_uid,
+        receiver_id: n_uid,
+        message: message
+    });
+    async.series([
+        // Append new message
+        function (cb) {
+            dependencies.conversation_repository.create_message(conversation_obj, function (err, conversation) {
+                cb(err, conversation);
+            });
+        },
+        // Seen previous messages
+        function (cb) {
+            cb(null, null);
+        },
+        // Set latest message in ChatList
+        function (cb) {
+            cb(null, null);
+        }
+    ], function (err, results) {
+        if (err) return callback(err);
+
+        var conversation = results[0];
+        return callback(null, { conversation });
+    });
 }
 
 ConversationService.prototype.seen = function (p_uid, n_uid, callback) {
     // Set all message of relevant sender receiver to seen
+    
     return callback(null, null);
 }
 

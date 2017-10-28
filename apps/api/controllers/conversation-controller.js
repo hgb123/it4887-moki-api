@@ -33,7 +33,7 @@ ConversationController.prototype.retrieve_all = function (req, res, next) {
 }
 
 ConversationController.prototype.create = function (req, res, next) {
-    dependencies.conversation_service.create(req.authen_user.id, req.params.user_id, req.body_conversation_message, function (err, conversation) {
+    dependencies.conversation_service.create(req.authen_user.id, req.params.user_id, req.body.conversation_message, function (err, conversation) {
         if (err) {
             next(err);
         } else {
