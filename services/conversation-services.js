@@ -14,7 +14,7 @@ ConversationService.prototype.retrieve_list = function (p_uid, page, limit, call
     var condition = { sender_id: p_uid };
     dependencies.conversation_repository.find_all_list(condition, page, limit, function (err, conversations_list) {
         if (err) return callback(err);
-        
+
         async.each(conversations_list, function (conversation, cb) {
             var condition = { id: conversation.receiver_id };
             dependencies.user_repository.find_by(condition, function (err, user) {
@@ -39,14 +39,33 @@ ConversationService.prototype.retrieve_list = function (p_uid, page, limit, call
 }
 
 ConversationService.prototype.retrieve_all = function (p_uid, n_uid, page, limit, callback) {
-    return callback(null, null);
+    var self = this;
+    var condition = {
+        $or: [
+            { sender_id: p_uid, receiver_id: n_uid },
+            { sender_id: n_uid, receiver_id: p_uid }
+        ]
+    }
+    dependencies.conversation_repository.find_all_message(condition, page, limit, function (err, conversations) {
+        if (err) return callback(err);
+        conversations.sort(function(a, b) {
+            return a.created_at > b.created_at; 
+        });
+
+        return callback(null, { conversations });
+        // TODO: set seen if page == 0
+    });
+
 }
 
 ConversationService.prototype.create = function (p_uid, n_uid, message, callback) {
+    // Set all previous message to seen
+    // Set latest message in ChatList
     return callback(null, null);
 }
 
 ConversationService.prototype.seen = function (p_uid, n_uid, callback) {
+    // Set all message of relevant sender receiver to seen
     return callback(null, null);
 }
 

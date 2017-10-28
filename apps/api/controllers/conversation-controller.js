@@ -20,7 +20,9 @@ ConversationController.prototype.retrieve_list = function (req, res, next) {
 }
 
 ConversationController.prototype.retrieve_all = function (req, res, next) {
-    dependencies.conversation_service.retrieve_all(req.authen_user.id, req.params.user_id, function (err, conversations) {
+    var page = req.options.offset ? req.options.offset : req.options.skip;
+    var limit = req.options.limit;
+    dependencies.conversation_service.retrieve_all(req.authen_user.id, req.params.user_id, page, limit, function (err, conversations) {
         if (err) {
             next(err);
         } else {
