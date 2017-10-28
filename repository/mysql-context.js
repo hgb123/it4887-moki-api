@@ -6,6 +6,8 @@ var DataContext = function(config) {
     var User = sequelize.import("./mysql-models/user");
     var Follow = sequelize.import("./mysql-models/follow");
     var Block = sequelize.import("./mysql-models/block");
+    var ChatList = sequelize.import("./mysql-models/chat-list");
+    var Conversation = sequelize.import("./mysql-models/conversation");
     var Product = sequelize.import("./mysql-models/product");
     var Like = sequelize.import("./mysql-models/like");
     var Comment = sequelize.import("./mysql-models/comment");
@@ -17,6 +19,8 @@ var DataContext = function(config) {
         User: User,
         Follow: Follow,
         Block: Block,
+        ChatList: ChatList,
+        Conversation: Conversation,
         Product: Product,
         Like: Like,
         Comment: Comment,
