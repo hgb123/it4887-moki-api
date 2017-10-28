@@ -53,13 +53,17 @@ ConversationService.prototype.retrieve_all = function (p_uid, n_uid, page, limit
             return a.created_at > b.created_at;
         });
 
-        // TODO: set seen if page == 0
+        if (page == 0)
+            self.seen(p_uid, n_uid, function (err, seen) {
+                return callback(null, { conversations });
+            });
         return callback(null, { conversations });
     });
 
 }
 
 ConversationService.prototype.create = function (p_uid, n_uid, message, callback) {
+    var self = this;
     var conversation_obj = new Conversation({
         sender_id: p_uid,
         receiver_id: n_uid,
@@ -74,11 +78,36 @@ ConversationService.prototype.create = function (p_uid, n_uid, message, callback
         },
         // Seen previous messages
         function (cb) {
-            cb(null, null);
+            self.seen(p_uid, n_uid, function (err, seen) {
+                cb(err, seen);
+            });
         },
-        // Set latest message in ChatList
+        // Set latest message in ChatList (step 1: del old)
         function (cb) {
-            cb(null, null);
+            var condition = {
+                $or: [
+                    { sender_id: p_uid, receiver_id: n_uid },
+                    { sender_id: n_uid, receiver_id: p_uid }
+                ]
+            }
+            dependencies.conversation_repository.delete_list(condition, function (err, deleted) {
+                cb(err, deleted);
+            });
+        },
+        // Set latest message in ChatList (step 2: add new)
+        function (cb) {
+            var chat_list_objs = [
+                { sender_id: p_uid, receiver_id: n_uid, latest_message: message },
+                { sender_id: n_uid, receiver_id: p_uid, latest_message: message }
+            ]
+            async.each(chat_list_objs, function (chat_list_obj, e_cb) {
+                dependencies.conversation_repository.create_list(chat_list_obj, function (err, created) {
+                    if (err) e_cb(err);
+                    else e_cb();
+                });
+            }, function (err) {
+                cb(err, true);
+            });
         }
     ], function (err, results) {
         if (err) return callback(err);
@@ -89,7 +118,6 @@ ConversationService.prototype.create = function (p_uid, n_uid, message, callback
 }
 
 ConversationService.prototype.seen = function (p_uid, n_uid, callback) {
-    // Set all message of relevant sender receiver to seen
     var condition = {
         sender_id: n_uid,
         receiver_id: p_uid
