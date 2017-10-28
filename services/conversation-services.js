@@ -15,25 +15,45 @@ ConversationService.prototype.retrieve_list = function (p_uid, page, limit, call
     dependencies.conversation_repository.find_all_list(condition, page, limit, function (err, conversations_list) {
         if (err) return callback(err);
 
-        async.each(conversations_list, function (conversation, cb) {
-            var condition = { id: conversation.receiver_id };
-            dependencies.user_repository.find_by(condition, function (err, user) {
-                if (err) cb(err);
+        async.each(conversations_list, function (conversation, e_cb) {
+            async.parallel([
+                // Get receiver's info
+                function (cb) {
+                    var condition = { id: conversation.receiver_id };
+                    dependencies.user_repository.find_by(condition, function (err, user) {
+                        cb(err, user);
+                    });
+                },
+                // Count unseen message
+                function (cb) {
+                    var condition = { 
+                        sender_id: conversation.receiver_id,
+                        receiver_id: p_uid,
+                        is_seen: false
+                    };
+                    dependencies.conversation_repository.count_message(condition, function (err, unseen_messages) {
+                        cb(err, unseen_messages);
+                    });
+                }
+            ], function (err, results) {
+                if (err) e_cb(err);
                 else {
+                    var user = results[0];
                     var receiver = !user ? null : {
                         id: user.id,
                         name: user.user_name,
                         avatar: user.avatar
                     };
-                    conversation.receiver = receiver;
                     delete conversation.receiver_id;
-                    cb();
+                    conversation.receiver = receiver;
+                    conversation.unseen_messages = results[1];
+                    e_cb();
                 }
             });
+
         }, function (err) {
             if (err) return callback(err);
 
-            // TODO: get number of unseen message 
             return callback(null, { conversations_list });
         });
     });
