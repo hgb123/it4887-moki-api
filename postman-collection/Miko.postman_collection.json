@@ -1,0 +1,816 @@
+{
+	"info": {
+		"name": "Miko",
+		"_postman_id": "0958f988-fc9f-9ea3-c472-a0acb91fdf02",
+		"description": "Moki",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authen",
+			"description": "",
+			"item": [
+				{
+					"name": "Create a new User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"phone_number\": \"0123456789\",\n\t\"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/api/signup",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"signup"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "User login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"phone_number\": \"0123456789\",\n\t\"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/api/logout",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"logout"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "User logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNTA3OTAwMTg1LCJleHAiOjE1MDc5MDczODV9.A-0i0OHDyLopzjWc4gskfPcpmulcSjVkckFjWuolNv4"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/api/logout",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"logout"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"description": "",
+			"item": [
+				{
+					"name": "Receive a single User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjAwMywiaWF0IjoxNTA4NDA4ODUxLCJleHAiOjE1MDk2MTg0NTF9.fcvphvVQ_OuQSaLuqTcuhxaj_w9_xhi5Uq7RKhF3WsM"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "localhost:3000/api/users/1",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Modify an existing User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNTA4NDA4OTY5LCJleHAiOjE1MDg0MTI1Njl9.Jbvi_c2n6AgnmALCJ5hQ7RlwnIHwx1IheKHu5Lm77yk"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"user_user_name\": \"Michael Jackson\",\n\t\"user_is_online\": false,\n\t\"user_avatar\": \"xxx.com\",\n\t\"user_phone_number\": \"0135479541\",\n\t\"user_address\": \"america\"\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/api/users/1",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "User follows a difference User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjAwMywiaWF0IjoxNTA4NDA4ODUxLCJleHAiOjE1MDk2MTg0NTF9.fcvphvVQ_OuQSaLuqTcuhxaj_w9_xhi5Uq7RKhF3WsM"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "localhost:3000/api/users/1/follow",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"1",
+								"follow"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Receive a list of User's followers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjAwMywiaWF0IjoxNTA4NDA4ODUxLCJleHAiOjE1MDk2MTg0NTF9.fcvphvVQ_OuQSaLuqTcuhxaj_w9_xhi5Uq7RKhF3WsM",
+								"disabled": true
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "localhost:3000/api/users/1/followers",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"1",
+								"followers"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Receive a list of User's following",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjAwMywiaWF0IjoxNTA4NDA4ODUxLCJleHAiOjE1MDk2MTg0NTF9.fcvphvVQ_OuQSaLuqTcuhxaj_w9_xhi5Uq7RKhF3WsM"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "localhost:3000/api/users/1/following",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"1",
+								"following"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "User blocks a different User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjAwMywiaWF0IjoxNTA4NDA4ODUxLCJleHAiOjE1MDk2MTg0NTF9.fcvphvVQ_OuQSaLuqTcuhxaj_w9_xhi5Uq7RKhF3WsM"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "localhost:3000/api/users/1/block",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"1",
+								"block"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Receive a list of User's blocked",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjAwMywiaWF0IjoxNTA4NDA4ODUxLCJleHAiOjE1MDk2MTg0NTF9.fcvphvVQ_OuQSaLuqTcuhxaj_w9_xhi5Uq7RKhF3WsM"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "localhost:3000/api/users/2003/blocked",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"2003",
+								"blocked"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Receive a list of User's likes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "localhost:3000/api/users/2003/likes",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"2003",
+								"likes"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Brands",
+			"description": "",
+			"item": [
+				{
+					"name": "Get a list of all Brands",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "localhost:3000/api/brands",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"brands"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get a single Brand",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "localhost:3000/api/brands/1",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"brands",
+								"1"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"description": "",
+			"item": [
+				{
+					"name": "Get a single Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "localhost:3000/api/categories/1",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"categories",
+								"1"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get a list of all Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "localhost:3000/api/categories",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"categories"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"description": "",
+			"item": [
+				{
+					"name": "Get a list of all Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "localhost:3000/api/products",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"products"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get a single Product",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjAwMywiaWF0IjoxNTA3NjMyNjI4LCJleHAiOjE1MDgyMzc0Mjh9.KTs6PzFVMgUo9fkxVvf76xdpt8qeAsNGlYkt1vXuK4A",
+								"disabled": true
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "localhost:3000/api/products/1",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"products",
+								"1"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Create a new Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjAwMywiaWF0IjoxNTA3NjMyNjI4LCJleHAiOjE1MDgyMzc0Mjh9.KTs6PzFVMgUo9fkxVvf76xdpt8qeAsNGlYkt1vXuK4A"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"product_name\": \"Text Soile\",\n\t\"product_price\": 100000,\n\t\"product_discount_percent\": 10,\n\t\"product_condition\": 0,\n\t\"product_images\": [\"google.com\"],\n\t\"product_video\": [\"google.com\"],\n\t\"product_description\": [\"duoc\", \"hay lam\", \"yeah\"],\n\t\"product_category_ids\": [1,2,3],\n\t\"product_brand_id\": 1,\n\t\"product_weight\": \"800g\",\n\t\"product_size\": \"5cm x 5cm x 5cm\",\n\t\"product_ship_from\": \"USA\"\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/api/products",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"products"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Modify an existing Product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjAwMywiaWF0IjoxNTA3NjMyNjI4LCJleHAiOjE1MDgyMzc0Mjh9.KTs6PzFVMgUo9fkxVvf76xdpt8qeAsNGlYkt1vXuK4A"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"product_name\": \"Text Soile\",\n\t\"product_price\": 90000,\n\t\"product_discount_percent\": 10,\n\t\"product_condition\": 1,\n\t\"product_images\": [\"lugle.com\"],\n\t\"product_video\": [\"google.com\"],\n\t\"product_category_ids\": [4, 5, 6],\n\t\"product_brand_id\": 1,\n\t\"product_weight\": \"850g\",\n\t\"product_size\": \"3cm x 4cm x 5cm\",\n\t\"product_ship_from\": \"VN\"\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/api/products/1",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"products",
+								"1"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Remove a Product",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjAwMywiaWF0IjoxNTA3NjMyNjI4LCJleHAiOjE1MDgyMzc0Mjh9.KTs6PzFVMgUo9fkxVvf76xdpt8qeAsNGlYkt1vXuK4A"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "localhost:3000/api/products/1",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"products",
+								"1"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get a list of all Comments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "localhost:3000/api/products/1/comments",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"products",
+								"1",
+								"comments"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Create a new Comment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjAwMywiaWF0IjoxNTA3NjMyNjI4LCJleHAiOjE1MDgyMzc0Mjh9.KTs6PzFVMgUo9fkxVvf76xdpt8qeAsNGlYkt1vXuK4A"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"comment_content\": \"co cai loz bo tin y, hu cau, dmm\"\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/api/products/1/comments",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"products",
+								"1",
+								"comments"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Block an existing Comment",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjAwMywiaWF0IjoxNTA3NjMyNjI4LCJleHAiOjE1MDgyMzc0Mjh9.KTs6PzFVMgUo9fkxVvf76xdpt8qeAsNGlYkt1vXuK4A"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/api/products/1/comments/2/block",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"products",
+								"1",
+								"comments",
+								"2",
+								"block"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Like/Unlike a Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjAwMywiaWF0IjoxNTA3NjMyNjI4LCJleHAiOjE1MDgyMzc0Mjh9.KTs6PzFVMgUo9fkxVvf76xdpt8qeAsNGlYkt1vXuK4A"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "localhost:3000/api/products/1/like",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"products",
+								"1",
+								"like"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Search for a list of specific Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "localhost:3000/api/products/search?keyword=text soile&category_id=1&condition=0&sort=-price",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"products",
+								"search"
+							],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "text soile",
+									"equals": true
+								},
+								{
+									"key": "brand_id",
+									"value": "1",
+									"equals": true,
+									"disabled": true
+								},
+								{
+									"key": "category_id",
+									"value": "1",
+									"equals": true
+								},
+								{
+									"key": "min_price",
+									"value": "10000",
+									"equals": true,
+									"disabled": true
+								},
+								{
+									"key": "max_price",
+									"value": "100000",
+									"equals": true,
+									"disabled": true
+								},
+								{
+									"key": "condition",
+									"value": "0",
+									"equals": true
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"equals": true,
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"equals": true,
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-price",
+									"equals": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

@@ -26,6 +26,7 @@ var mysql_data_context = require("../../repository/mysql-context")(config.mysql)
 var UserRepository = require("../../repository/user-repository");
 var FollowRepository = require("../../repository/follow-repository");
 var BlockRepository = require("../../repository/block-repository");
+var ConversationRepository = require("../../repository/conversation-repository");
 var ProductRepository = require("../../repository/product-repository");
 var BrandRepository = require("../../repository/brand-repository");
 var CategoryRepository = require("../../repository/category-repository");
@@ -35,7 +36,8 @@ var CommentRepository = require("../../repository/comment-repository");
 
 var user_repository = new UserRepository(mysql_data_context);
 var follow_repository = new FollowRepository(mysql_data_context);
-var block_repository  = new BlockRepository(mysql_data_context);
+var block_repository = new BlockRepository(mysql_data_context);
+var conversation_repository = new ConversationRepository(mysql_data_context);
 var product_repository = new ProductRepository(mysql_data_context);
 var brand_repository = new BrandRepository(mysql_data_context);
 var category_repository = new CategoryRepository(mysql_data_context);
@@ -47,6 +49,7 @@ var comment_repository = new CommentRepository(mysql_data_context);
 // Service
 var AuthenService = require("../../services/authen-services");
 var UserService = require("../../services/user-services");
+var ConversationService = require("../../services/conversation-services");
 var TokenService = require("../../services/token-services");
 var ProductService = require("../../services/product-services");
 var BrandService = require("../../services/brand-services");
@@ -55,6 +58,7 @@ var CommentService = require("../../services/comment-services");
 
 var authen_service = new AuthenService(user_repository);
 var user_service = new UserService(user_repository, follow_repository, block_repository);
+var conversation_service = new ConversationService(conversation_repository, user_repository);
 var token_service = new TokenService();
 var product_service = new ProductService(product_repository, category_repository, product_category_repository, brand_repository, like_repository, comment_repository, user_repository, block_repository);
 var brand_service = new BrandService(brand_repository);
@@ -65,6 +69,7 @@ var comment_service = new CommentService(comment_repository, user_repository);
 // Controller
 var AuthenController = require("./controllers/authen-controller");
 var UserController = require("./controllers/user-controller");
+var ConversationController = require("./controllers/conversation-controller");
 var ProductController = require("./controllers/product-controller");
 var BrandController = require("./controllers/brand-controller");
 var CategoryController = require("./controllers/category-controller");
@@ -72,6 +77,7 @@ var CommentController = require("./controllers/comment-controller");
 
 var authen_controller = new AuthenController(authen_service, token_service);
 var user_controller = new UserController(user_service);
+var conversation_controller = new ConversationController(conversation_service);
 var product_controller = new ProductController(product_service);
 var brand_controller = new BrandController(brand_service);
 var category_controller = new CategoryController(category_service);
@@ -82,6 +88,7 @@ var comment_controller = new CommentController(comment_service);
 
 require("./routes/authen-routes")(app, authen_controller);
 require("./routes/user-routes")(app, user_controller, product_controller);
+require("./routes/conversation-routes")(app, conversation_controller);
 require("./routes/product-routes")(app, product_controller, comment_controller);
 require("./routes/brand-routes")(app, brand_controller, product_controller);
 require("./routes/category-routes")(app, category_controller, product_controller);
