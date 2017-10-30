@@ -77,6 +77,17 @@ module.exports = function (app, user_controller, product_controller) {
             return res.status(200).send(res.products);
         }
     );
+
+    app.get("/api/users/:user_id/listings",
+        function (req, res, next) {
+            if (req.headers["authorization"]) token_middleware.verify(req, res, next);
+            else next();
+        },
+        product_controller.retrieve_all,
+        function (req, res) {
+            res.status(200).send(res.products);
+        }
+    );
 }
 
 function get_client_input(req, res, next) {

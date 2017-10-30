@@ -23,11 +23,16 @@ var ProductService = function (product_repository, category_repository, product_
     dependencies.block_repository = block_repository;
 }
 
-ProductService.prototype.retrieve_all = function (user_id, brand_id, category_id, user_likes_id, page, limit, callback) {
+ProductService.prototype.retrieve_all = function (user_id, owner_id, brand_id, category_id, user_likes_id, page, limit, callback) {
     if (brand_id && category_id) return callback({ type: "Bad Request" });
     async.waterfall([
         function (cb) {
             var condition = {};
+            cb(null, condition);
+        },
+        // Check if query by owner_id
+        function (condition, cb) {
+            if (owner_id != null) condition.user_id = owner_id;
             cb(null, condition);
         },
         // Check if query by brand_id
