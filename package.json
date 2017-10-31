@@ -23,6 +23,7 @@
     "mysql2": "^1.4.2",
     "object-assign": "^4.1.1",
     "sequelize": "^4.13.5",
-    "shortid": "^2.2.8"
+    "shortid": "^2.2.8",
+    "socket.io": "^2.0.4"
   }
 }
