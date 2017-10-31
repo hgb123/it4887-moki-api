@@ -13,7 +13,8 @@ CommentRepository.prototype.find_all = function (condition, page, limit, callbac
         .findAll({
             where: condition,
             limit: limit,
-            offset: page * limit
+            offset: page * limit,
+            order: [["created_at", "DESC"]]
         })
         .then(function (result) {
             for (var i = 0; i < result.length; i++) {
