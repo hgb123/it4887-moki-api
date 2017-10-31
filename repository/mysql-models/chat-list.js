@@ -13,6 +13,10 @@ module.exports = function (sequelize, DataTypes) {
         latest_message: {
             type: DataTypes.STRING(500),
             allowNull: false
+        },
+        is_joined: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false
         }
     }, {
             underscored: true

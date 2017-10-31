@@ -26,7 +26,7 @@ ConversationService.prototype.retrieve_list = function (p_uid, page, limit, call
                 },
                 // Count unseen message
                 function (cb) {
-                    var condition = { 
+                    var condition = {
                         sender_id: conversation.receiver_id,
                         receiver_id: p_uid,
                         is_seen: false
@@ -147,6 +147,49 @@ ConversationService.prototype.seen = function (p_uid, n_uid, callback) {
         if (err) return callback(err);
 
         return callback(null, { message: "Conversation has been seen." });
+    });
+}
+
+Conversation.prototype.is_on_same_conversation = function (p_uid, n_uid, callback) {
+    var condition = {
+        $or: [
+            { sender_id: p_uid, receiver_id: n_uid, is_joined: true },
+            { sender_id: n_uid, receiver_id: p_uid, is_joined: true }
+        ]
+    }
+    dependencies.conversation_repository.find_all_list(condition, 0, 2, function (err, lists) {
+        if (err) return callback(err);
+
+        var is_on_same_conversation = list[0].is_joined && lists[1].is_joined;
+        return (null, { is_on_same_conversation });
+    });
+}
+
+ConversationService.prototype.join = function (p_uid, n_uid, callback) {
+    var condition = {
+        sender_id: p_uid,
+        receiver_id: n_uid
+    };
+    async.waterfall([
+        // Check if joined yet
+        function (cb) {
+            dependencies.conversation_repository.find_list_by(condition, function (err, list) {
+                cb(err, list.is_joined);
+            });
+        },
+        function (joined, cb) {
+            // If joind, leave, vice versa 
+            var updated_list = { is_joined: !joined };
+            dependencies.conversation_repository.update_list(condition, updated_list, function (err, updated) {
+                cb(err, joined);
+            });
+        }
+    ], function (err, joined) {
+        if (err) return callback(err);
+
+        return callback(null, {
+            message: "Successfully " + (joined ? "leave" : "join") + " the conversation."
+        });
     });
 }
 

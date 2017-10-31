@@ -15,8 +15,6 @@ app.use(body_parser.json({
     }
 }));
 /* ===== End Express setup ===== */
-var server = require("http").Server(app);
-var io = require("socket.io").listen(server);
 
 /* ===== Components setup ===== */
 // DataContext
@@ -45,7 +43,6 @@ var product_category_repository = new ProductCategoryRepository(mysql_data_conte
 var like_repository = new LikeRepository(mysql_data_context);
 var comment_repository = new CommentRepository(mysql_data_context);
 
-
 // Service
 var AuthenService = require("../../services/authen-services");
 var UserService = require("../../services/user-services");
@@ -64,7 +61,6 @@ var product_service = new ProductService(product_repository, category_repository
 var brand_service = new BrandService(brand_repository);
 var category_service = new CategoryService(category_repository);
 var comment_service = new CommentService(comment_repository, user_repository);
-
 
 // Controller
 var AuthenController = require("./controllers/authen-controller");
@@ -93,6 +89,9 @@ require("./routes/product-routes")(app, product_controller, comment_controller);
 require("./routes/brand-routes")(app, brand_controller, product_controller);
 require("./routes/category-routes")(app, category_controller, product_controller);
 
+var server = require("http").Server(app);
+var chat_app = require("../chat/app")(server, conversation_service);
+
 app.use(function (err, req, res, next) {
     console.error(new Date());
     console.error(err);
@@ -115,18 +114,10 @@ app.use(function (err, req, res, next) {
 });
 
 var port = config.port;
-var env = process.env.NODE_ENV
+var env = process.env.NODE_ENV;
 server.listen(port, function () {
     console.log("Environment:", env);
     console.log("Server is listening on port:", port);
-});
-
-io.on("connection", function(socket) {
-    console.log("One client connected");
-
-    socket.on("disconnect", function() {
-        console.log("A client has disconnected");
-    });
 });
 
 module.exports = app;
