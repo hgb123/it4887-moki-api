@@ -105,8 +105,8 @@ app.use(function (err, req, res, next) {
                 return res.status(402).send({ error: "Request Failed" });
             case "Not Found":
                 return res.status(404).send({ error: "Not Found" });
-            case "Duplicate":
-                return res.status(409).send({ error: "Duplicate" });
+            case "Duplicated":
+                return res.status(409).send({ error: "Duplicated" });
         }
     }
 

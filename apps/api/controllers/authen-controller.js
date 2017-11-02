@@ -15,6 +15,7 @@ AuthenController.prototype.signup = function (req, res, next) {
             next(err);
         } else {
             req.user_obj = { id: user.id };
+            res.user = user;
             next();
         }
     });
@@ -26,6 +27,7 @@ AuthenController.prototype.login = function (req, res, next) {
             next(err);
         } else {
             req.user_obj = { id: user.id };
+            res.user = user;
             next();
         }
     });
@@ -48,6 +50,7 @@ AuthenController.prototype.generate_token = function (req, res, next) {
             next(err);
         } else {
             res.authen_obj = authen_obj;
+            res.authen_obj.user = res.user;
             next();
         }
     });
