@@ -14,6 +14,7 @@ var DataContext = function(config) {
     var Brand = sequelize.import("./mysql-models/brand");
     var Category = sequelize.import("./mysql-models/category");
     var ProductCategory = sequelize.import("./mysql-models/product-category");
+    var SearchHistory = sequelize.import("./mysql-models/search-history");
 
     return {
         User: User,
@@ -27,6 +28,7 @@ var DataContext = function(config) {
         Brand: Brand,
         Category: Category,
         ProductCategory: ProductCategory,
+        SearchHistory: SearchHistory,
         sequelize: sequelize
     }
 }
