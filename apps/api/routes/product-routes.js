@@ -1,6 +1,6 @@
 var token_middleware = require("../middlewares/token");
 
-module.exports = function (app, product_controller, comment_controller) {
+module.exports = function (app, product_controller, comment_controller, search_history_controller) {
     // Basic
     app.get("/api/products",
         function (req, res, next) {
@@ -19,6 +19,10 @@ module.exports = function (app, product_controller, comment_controller) {
             else next();
         },
         product_controller.retrieve_some,
+        function(req, res, next) {
+            if (req.authen_user && req.search_condition.keyword) search_history_controller.create(req, res, next);
+            else next();
+        },
         function (req, res) {
             return res.status(200).send(res.products);
         }
