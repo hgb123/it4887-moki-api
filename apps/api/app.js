@@ -46,6 +46,7 @@ var comment_repository = new CommentRepository(mysql_data_context);
 // Service
 var AuthenService = require("../../services/authen-services");
 var UserService = require("../../services/user-services");
+var NotificationService = require("../../services/notification-services");
 var ConversationService = require("../../services/conversation-services");
 var TokenService = require("../../services/token-services");
 var ProductService = require("../../services/product-services");
@@ -55,6 +56,7 @@ var CommentService = require("../../services/comment-services");
 
 var authen_service = new AuthenService(user_repository);
 var user_service = new UserService(user_repository, follow_repository, block_repository);
+var notification_service = new NotificationService();
 var conversation_service = new ConversationService(conversation_repository, user_repository);
 var token_service = new TokenService();
 var product_service = new ProductService(product_repository, category_repository, product_category_repository, brand_repository, like_repository, comment_repository, user_repository, block_repository);

@@ -10,5 +10,9 @@ module.exports = {
     authen: {
         secret: "localtest",
         token_expires_in: "2h"
+    },
+    firebase: {
+        service_account: require("../key/it4887-moki-cm-firebase-adminsdk-serviceacc"),
+        database_url: "https://it4887-moki-cm.firebaseio.com"
     }
 }
