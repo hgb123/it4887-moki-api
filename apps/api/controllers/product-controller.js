@@ -42,6 +42,7 @@ ProductController.prototype.retrieve_some = function (req, res, next) {
             next(err);
         } else {
             res.products = products;
+            req.search_condition = condition;
             next();
         }
     });

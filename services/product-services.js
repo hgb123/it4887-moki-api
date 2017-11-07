@@ -143,7 +143,7 @@ ProductService.prototype.retrieve_some = function(user_id, pre_condition, order_
             }, function (err) {
                 if (err) return callback(err);
 
-                return callback(null, { products });
+                return callback(null, { products }, pre_condition);
             });
         });
     });
