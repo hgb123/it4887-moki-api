@@ -12,7 +12,7 @@ CategoryRepository.prototype.find_all = function (condition, page, limit, callba
     dependencies.Category
         .findAll({
             where: condition,
-            order: [["name", "ASC"]],
+            // order: [["name", "ASC"]],
             limit: limit,
             offset: page * limit
         })
