@@ -9,6 +9,6 @@ module.exports = {
     },
     authen: {
         secret: "localtest",
-        token_expires_in: "2h"
+        token_expires_in: "7d"
     }
 }
