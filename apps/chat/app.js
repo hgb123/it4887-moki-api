@@ -12,17 +12,26 @@ var ChatApp = function (server, conversation_service) {
 function handler(socket) {
     console.log("One client connected");
 
-    socket.on("join-conversation", function (data) {
-        var sender_id = data.sender_id;
-        var receiver_id = data.receiver_id;
-        dependencies.conversation_service.join(sender_id, receiver_id, callback);
+    // socket.on("join-conversation", function (data) {
+    //     var sender_id = data.sender_id;
+    //     var receiver_id = data.receiver_id;
+    //     dependencies.conversation_service.join(sender_id, receiver_id, function (err, joined) { });
+    // });
+
+    socket.on("test-abc", function (data) {
+        console.log("received");
+        socket.emit("123", "alo alo alo");
     });
 
-    socket.on("typing", function (data) {
-        // good-to-have: "is typing" experience
+    socket.on("is-typing", function (data) {
+        var sender_id = data.sender_id;
+        var receiver_id = data.receiver_id;
+        var is_typing = data.is_typing;
+        socket.emit("is-typing-" + receiver_id, { is_typing });
     });
 
     socket.on("send-message", function (data) {
+        // var data = JSON.parse(data);
         var sender_id = data.sender_id;
         var receiver_id = data.receiver_id;
         var message = data.message;
@@ -30,15 +39,15 @@ function handler(socket) {
             // Append message
             function (cb) {
                 dependencies.conversation_service.create(sender_id, receiver_id, message, function (err, sent) {
-                    cb(err, send);
+                    cb(err, sent);
                 });
             },
             // Check if both are on the same conversation
-            function (cb) {
-                dependencies.conversation_service.is_on_same_conversation(sender_id, receiver_id, function (err, res) {
-                    cb(err, res.is_on_same_conversation);
-                });
-            },
+            // function (cb) {
+            //     dependencies.conversation_service.is_on_same_conversation(sender_id, receiver_id, function (err, res) {
+            //         cb(err, res.is_on_same_conversation);
+            //     });
+            // },
             // Update chat list of receiver
             function (cb) {
                 dependencies.conversation_service.retrieve_list(receiver_id, 0, 1000, function (err, res) {
@@ -46,18 +55,19 @@ function handler(socket) {
                 });
             }
         ], function (err, results) {
-            var is_on_same_conversation = results[1];
-            var conversations_list = results[2];
-            var res = { is_on_same_conversation, conversations_list };
-            socket.emit("receive_mesage", res);
+            // var is_on_same_conversation = results[1];
+            var conversations_list = results[1];
+            // var res = { is_on_same_conversation, conversations_list };
+            var res = { conversations_list };
+            socket.emit("receive-mesage-" + receiver_id, res);
         });
     });
 
-    socket.on("leave-conversation", function (data) {
-        var sender_id = data.sender_id;
-        var receiver_id = data.receiver_id;
-        dependencies.conversation_service.join(sender_id, receiver_id, callback);
-    });
+    // socket.on("leave-conversation", function (data) {
+    //     var sender_id = data.sender_id;
+    //     var receiver_id = data.receiver_id;
+    //     dependencies.conversation_service.join(sender_id, receiver_id, callback);
+    // });
 
     socket.on("disconnect", function () {
         console.log("A client has disconnected");
