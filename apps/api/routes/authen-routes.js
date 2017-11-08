@@ -1,8 +1,9 @@
 var token_middleware = require("../middlewares/token");
 
-module.exports = function (app, authen_controller) {
+module.exports = function (app, authen_controller, notification_controller) {
     app.post("/api/signup",
         authen_controller.signup,
+        notification_controller.create_setting,
         authen_controller.generate_token,
         function (req, res) {
             return res.status(201).send(res.authen_obj);
