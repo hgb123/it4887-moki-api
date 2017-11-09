@@ -16,7 +16,7 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: false,
             defaultValue: 1
         },
-        avatar: { 
+        avatar: {
             type: DataTypes.STRING(200),
             allowNull: true
         },
@@ -35,6 +35,10 @@ module.exports = function (sequelize, DataTypes) {
         salt: {
             type: DataTypes.STRING(100),
             allowNull: false
+        },
+        device_token: {
+            type: DataTypes.TEXT,
+            allowNull: true
         }
     }, {
             underscored: true
