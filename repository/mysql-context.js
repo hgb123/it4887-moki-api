@@ -4,6 +4,7 @@ var DataContext = function(config) {
     var sequelize = new Sequelize(config.database, config.username, config.password, config);
 
     var User = sequelize.import("./mysql-models/user");
+    var PushSetting = sequelize.import("./mysql-models/push-setting");
     var Follow = sequelize.import("./mysql-models/follow");
     var Block = sequelize.import("./mysql-models/block");
     var ChatList = sequelize.import("./mysql-models/chat-list");
@@ -18,6 +19,7 @@ var DataContext = function(config) {
 
     return {
         User: User,
+        PushSetting: PushSetting,
         Follow: Follow,
         Block: Block,
         ChatList: ChatList,
