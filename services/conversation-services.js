@@ -152,14 +152,16 @@ ConversationService.prototype.seen = function (p_uid, n_uid, callback) {
 
 Conversation.prototype.is_on_same_conversation = function (p_uid, n_uid, callback) {
     var condition = {
-        $or: [
-            { sender_id: p_uid, receiver_id: n_uid, is_joined: true },
-            { sender_id: n_uid, receiver_id: p_uid, is_joined: true }
-        ]
+        sender_id: p_uid,
+        receiver_id: n_uid,
+        is_joined: true
     }
     dependencies.conversation_repository.find_all_list(condition, 0, 2, function (err, lists) {
         if (err) return callback(err);
 
+        if (lists.length == 0) {
+
+        }
         var is_on_same_conversation = list[0].is_joined && lists[1].is_joined;
         return (null, { is_on_same_conversation });
     });
@@ -174,7 +176,9 @@ ConversationService.prototype.join = function (p_uid, n_uid, callback) {
         // Check if joined yet
         function (cb) {
             dependencies.conversation_repository.find_list_by(condition, function (err, list) {
-                cb(err, list.is_joined);
+                if (err) cb(err);
+                else if (!list) cb({ type: "Not Found (First time chat)" });
+                else cb(list);
             });
         },
         function (joined, cb) {
@@ -185,6 +189,9 @@ ConversationService.prototype.join = function (p_uid, n_uid, callback) {
             });
         }
     ], function (err, joined) {
+        if (err.type && err.type == "Not Found (First time chat)") return callback({
+            message: "First time conversation, please send a message."
+        });
         if (err) return callback(err);
 
         return callback(null, {

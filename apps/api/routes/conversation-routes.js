@@ -17,19 +17,19 @@ module.exports = function (app, conversation_controller) {
         }
     );
 
-    app.post("/api/conversations/t/:user_id",
-        token_middleware.verify,
-        conversation_controller.create,
-        function (req, res) {
-            return res.status(200).send(res.conversation);
-        }
-    );
+    // app.post("/api/conversations/t/:user_id",
+    //     token_middleware.verify,
+    //     conversation_controller.create,
+    //     function (req, res) {
+    //         return res.status(200).send(res.conversation);
+    //     }
+    // );
 
-    app.post("/api/conversations/t/:user_id/seen",
-        token_middleware.verify,
-        conversation_controller.seen,
-        function (req, res) {
-            return res.status(200).send(res.conversation_seen);
-        }
-    );
+    // app.post("/api/conversations/t/:user_id/seen",
+    //     token_middleware.verify,
+    //     conversation_controller.seen,
+    //     function (req, res) {
+    //         return res.status(200).send(res.conversation_seen);
+    //     }
+    // );
 }

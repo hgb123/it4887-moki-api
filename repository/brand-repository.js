@@ -12,7 +12,7 @@ BrandRepository.prototype.find_all = function (condition, page, limit, callback)
     dependencies.Brand
         .findAll({
             where: condition,
-            order: [["name", "ASC"]],
+            // order: [["name", "ASC"]],
             limit: limit,
             offset: page * limit
         })

@@ -9,7 +9,7 @@ module.exports = {
     },
     authen: {
         secret: "localtest",
-        token_expires_in: "2h"
+        token_expires_in: "7d"
     },
     firebase: {
         service_account: require("../key/it4887-moki-cm-firebase-adminsdk-serviceacc"),

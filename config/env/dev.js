@@ -1,13 +1,14 @@
 module.exports = {
     port: 3000,
     mysql: {
-        username: "enzimer",
-        password: "Geekdev@123456#",
+        username: "hgb123",
+        password: "Haha123456789",
         database: "moki",
-        host: "mcbooks-satellite.caqfpadax79e.ap-southeast-1.rds.amazonaws.com",
+        host: "baoserver.cra3yvihlrzl.us-east-2.rds.amazonaws.com",
         dialect: "mysql"
     },
     authen: {
-        secret: "it4887#dev"
+        secret: "localtest",
+        token_expires_in: "7d"
     }
 }

@@ -16,7 +16,7 @@ module.exports = function (sequelize, DataTypes) {
         },
         is_joined: {
             type: DataTypes.BOOLEAN,
-            allowNull: false
+            allowNull: true
         }
     }, {
             underscored: true
