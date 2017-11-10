@@ -1,14 +1,17 @@
 var async = require("async");
 var config = require("../config/config");
+var Activity = require("../domain-models/Activity");
 var Comment = require("../domain-models/comment");
 var dependencies = {
     comment_repository: null,
-    user_repository: null
+    user_repository: null,
+    notification_service: null
 }
 
-var CommentService = function (comment_repository, user_repository) {
+var CommentService = function (comment_repository, user_repository, notification_service) {
     dependencies.comment_repository = comment_repository;
     dependencies.user_repository = user_repository;
+    dependencies.notification_service = notification_service;
 }
 
 CommentService.prototype.retrieve_all = function (page, limit, callback) {
@@ -42,7 +45,16 @@ CommentService.prototype.create = function (comment_obj, callback) {
     dependencies.comment_repository.create(comment_obj, function (err, comment) {
         if (err) return callback(err);
 
-        return callback(null, comment);
+        var noti_obj = {
+            activity: Activity.PRODUCT_COMMENTED,
+            user_id: comment.user_id,
+            product_id: comment.product_id
+        }
+        dependencies.notification_service.handle(noti_obj, function(err, sent) {
+            if (err) return callback(err);
+
+            return callback(null, comment);
+        });
     });
 }
 

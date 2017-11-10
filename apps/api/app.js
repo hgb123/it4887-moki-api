@@ -61,14 +61,14 @@ var CommentService = require("../../services/comment-services");
 
 var authen_service = new AuthenService(user_repository);
 var user_service = new UserService(user_repository, follow_repository, block_repository);
-var notification_service = new NotificationService(push_setting_repository);
+var notification_service = new NotificationService(user_repository, follow_repository, product_repository, push_setting_repository);
 var conversation_service = new ConversationService(conversation_repository, user_repository);
 var token_service = new TokenService();
-var product_service = new ProductService(product_repository, category_repository, product_category_repository, brand_repository, like_repository, comment_repository, user_repository, block_repository);
+var product_service = new ProductService(product_repository, category_repository, product_category_repository, brand_repository, like_repository, comment_repository, user_repository, block_repository, notification_service);
 var search_history_service = new SearchHistoryService(search_history_repository);
 var brand_service = new BrandService(brand_repository);
 var category_service = new CategoryService(category_repository);
-var comment_service = new CommentService(comment_repository, user_repository);
+var comment_service = new CommentService(comment_repository, user_repository, notification_service);
 
 // Controller
 var AuthenController = require("./controllers/authen-controller");
