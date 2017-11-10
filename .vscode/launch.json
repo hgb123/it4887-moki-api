@@ -18,6 +18,15 @@
                 "env": {
                     "NODE_ENV": "local"
                 }
+            },
+            {
+                "type": "node",
+                "request": "launch",
+                "name": "Test Script",
+                "program": "${workspaceRoot}/tests/test2.js",
+                "env": {
+                    "NODE_ENV": "local"
+                }
             }
         ]
     }
