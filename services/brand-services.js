@@ -16,6 +16,7 @@ BrandService.prototype.retrieve_all = function (page, limit, callback) {
 
 BrandService.prototype.retrieve_one = function (id, callback) {
     var condition = { id: id };
+    if (id == 0) return callback(null, { brand: { id: 0, name: "Tất cả", created_at: null, updated_at: null } });
     dependencies.brand_repository.find_by(condition, function (err, brand) {
         if (err) return callback(err);
 

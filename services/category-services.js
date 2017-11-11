@@ -16,6 +16,7 @@ CategoryService.prototype.retrieve_all = function (page, limit, callback) {
 
 CategoryService.prototype.retrieve_one = function (id, callback) {
     var condition = { id: id };
+    if (id == 0) return callback(null, { category: { id: 0, name: "Tất cả", created_at: null, updated_at: null } });
     dependencies.category_repository.find_by(condition, function (err, category) {
         if (err) return callback(err);
 

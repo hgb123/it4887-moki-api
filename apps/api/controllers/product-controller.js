@@ -11,6 +11,8 @@ ProductController.prototype.retrieve_all = function (req, res, next) {
     var owner_id = req.params.user_id ? req.params.user_id : null;
     var brand_id = req.params.brand_id ? req.params.brand_id : null;
     var category_id = req.params.category_id ? req.params.category_id : null;
+    if (brand_id == 0) brand_id = null;
+    if (category_id == 0) category_id = null;
     var user_likes_id = req.params.user_id ? req.params.user_id : null;
     var page = req.options.offset ? req.options.offset : req.options.skip;
     var limit = req.options.limit;
