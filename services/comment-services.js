@@ -1,6 +1,6 @@
 var async = require("async");
 var config = require("../config/config");
-var Activity = require("../domain-models/Activity");
+var Activity = require("../domain-models/activity");
 var Comment = require("../domain-models/comment");
 var dependencies = {
     comment_repository: null,
