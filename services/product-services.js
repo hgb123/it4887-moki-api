@@ -198,12 +198,12 @@ ProductService.prototype.create = function (user_id, product_obj, callback) {
             activity: Activity.PRODUCT_POSTED,
             product: product
         }
-        dependencies.notification_service.handle(noti_obj, function (err, sent) {
-            if (err) return callback(err);
+        // dependencies.notification_service.handle(noti_obj, function (err, sent) {
+            // if (err) return callback(err);
 
             product.category_ids = category_ids;
             return callback(null, product);
-        });
+        // });
     });
 }
 
@@ -313,13 +313,13 @@ ProductService.prototype.like = function (user_id, product_id, callback) {
             user_id: user_id,
             product_id: product_id
         }
-        dependencies.notification_service.handle(noti_obj, function (err, sent) {
-            if (err) return callback(err);
+        // dependencies.notification_service.handle(noti_obj, function (err, sent) {
+            // if (err) return callback(err);
 
             return callback(null, {
                 message: "Product is " + (liked ? "liked." : "unliked.")
             });
-        });
+        // });
     });
 }
 
