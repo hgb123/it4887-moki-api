@@ -82,14 +82,14 @@ ConversationService.prototype.retrieve_all = function (p_uid, n_uid, page, limit
 
 }
 
-ConversationService.prototype.create = function (p_uid, n_uid, message, callback) {
+ConversationService.prototype.create = function (p_uid, n_uid, prod_id, message, callback) {
     var self = this;
     var conversation_obj = new Conversation({
         sender_id: p_uid,
         receiver_id: n_uid,
         message: message
     });
-    async.series([
+    async.waterfall([
         // Append new message
         function (cb) {
             dependencies.conversation_repository.create_message(conversation_obj, function (err, conversation) {
@@ -97,13 +97,19 @@ ConversationService.prototype.create = function (p_uid, n_uid, message, callback
             });
         },
         // Seen previous messages
-        function (cb) {
+        function (conversation, cb) {
             self.seen(p_uid, n_uid, function (err, seen) {
-                cb(err, seen);
+                cb(err, conversation);
+            });
+        },
+        // Check if receiver is on same chat
+        function (conversation, cb) {
+            self.is_on_same_conversation(n_uid, p_uid, function (err, res) {
+                cb(err, conversation, res.is_on_same_conversation);
             });
         },
         // Set latest message in ChatList (step 1: del old)
-        function (cb) {
+        function (conversation, is_on_same_conversation, cb) {
             var condition = {
                 $or: [
                     { sender_id: p_uid, receiver_id: n_uid },
@@ -111,14 +117,14 @@ ConversationService.prototype.create = function (p_uid, n_uid, message, callback
                 ]
             }
             dependencies.conversation_repository.delete_list(condition, function (err, deleted) {
-                cb(err, deleted);
+                cb(err, conversation, is_on_same_conversation);
             });
         },
         // Set latest message in ChatList (step 2: add new)
-        function (cb) {
+        function (conversation, is_on_same_conversation, cb) {
             var chat_list_objs = [
-                { sender_id: p_uid, receiver_id: n_uid, latest_message: message },
-                { sender_id: n_uid, receiver_id: p_uid, latest_message: message }
+                { sender_id: p_uid, receiver_id: n_uid, latest_message: message, latest_product_id: prod_id, is_joined: true },
+                { sender_id: n_uid, receiver_id: p_uid, latest_message: message, latest_product_id: prod_id, is_joined: is_on_same_conversation }
             ]
             async.each(chat_list_objs, function (chat_list_obj, e_cb) {
                 dependencies.conversation_repository.create_list(chat_list_obj, function (err, created) {
@@ -126,14 +132,13 @@ ConversationService.prototype.create = function (p_uid, n_uid, message, callback
                     else e_cb();
                 });
             }, function (err) {
-                cb(err, true);
+                cb(err, conversation, is_on_same_conversation);
             });
         }
-    ], function (err, results) {
+    ], function (err, conversation, is_on_same_conversation) {
         if (err) return callback(err);
 
-        var conversation = results[0];
-        return callback(null, { conversation });
+        return callback(null, { conversation, is_on_same_conversation });
     });
 }
 
@@ -150,52 +155,30 @@ ConversationService.prototype.seen = function (p_uid, n_uid, callback) {
     });
 }
 
-Conversation.prototype.is_on_same_conversation = function (p_uid, n_uid, callback) {
+ConversationService.prototype.is_on_same_conversation = function (p_uid, n_uid, callback) {
     var condition = {
         sender_id: p_uid,
-        receiver_id: n_uid,
-        is_joined: true
+        receiver_id: n_uid
     }
-    dependencies.conversation_repository.find_all_list(condition, 0, 2, function (err, lists) {
+    dependencies.conversation_repository.find_list_by(condition, function (err, list) {
         if (err) return callback(err);
 
-        if (lists.length == 0) {
-
-        }
-        var is_on_same_conversation = list[0].is_joined && lists[1].is_joined;
-        return (null, { is_on_same_conversation });
+        var is_on_same_conversation = list ? list.is_joined : false;
+        return callback(null, { is_on_same_conversation });
     });
 }
 
-ConversationService.prototype.join = function (p_uid, n_uid, callback) {
+ConversationService.prototype.join = function (p_uid, n_uid, is_joined, callback) {
     var condition = {
         sender_id: p_uid,
         receiver_id: n_uid
     };
-    async.waterfall([
-        // Check if joined yet
-        function (cb) {
-            dependencies.conversation_repository.find_list_by(condition, function (err, list) {
-                if (err) cb(err);
-                else if (!list) cb({ type: "Not Found (First time chat)" });
-                else cb(list);
-            });
-        },
-        function (joined, cb) {
-            // If joind, leave, vice versa 
-            var updated_list = { is_joined: !joined };
-            dependencies.conversation_repository.update_list(condition, updated_list, function (err, updated) {
-                cb(err, joined);
-            });
-        }
-    ], function (err, joined) {
-        if (err.type && err.type == "Not Found (First time chat)") return callback({
-            message: "First time conversation, please send a message."
-        });
+    var updated_list = { is_joined };
+    dependencies.conversation_repository.update_list(condition, updated_list, function (err, updated) {
         if (err) return callback(err);
 
         return callback(null, {
-            message: "Successfully " + (joined ? "leave" : "join") + " the conversation."
+            message: "Successfully " + (is_joined ? "join" : "leave") + " the conversation."
         });
     });
 }
