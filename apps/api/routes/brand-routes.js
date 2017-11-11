@@ -1,3 +1,5 @@
+var token_middleware = require("../middlewares/token");
+
 module.exports = function (app, brand_controller, product_controller) {
     app.get("/api/brands",
         brand_controller.retrieve_all,
