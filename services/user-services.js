@@ -206,7 +206,7 @@ function add_more_properties(retriever_id, id, user, callback) {
                     { user_id2: retriever_id, user_id1: id }
                 ]
             }
-            dependencies.block_repository.find_all(condition, function (err, blocks) {
+            dependencies.block_repository.find_all(condition, 0, 2, function (err, blocks) {
                 cb(err, blocks.length > 0);
             });
         }
