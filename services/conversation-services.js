@@ -183,4 +183,16 @@ ConversationService.prototype.join = function (p_uid, n_uid, is_joined, callback
     });
 }
 
+ConversationService.prototype.count_badges = function (user_id, callback) {
+    var condition = {
+        receiver_id: user_id,
+        is_seen: false
+    }
+    dependencies.conversation_repository.count_badges(condition, function (err, badges) {
+        if (err) return callback(err);
+
+        return callback(null, { badges });
+    });
+}
+
 module.exports = ConversationService;

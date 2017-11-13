@@ -9,6 +9,14 @@ module.exports = function (app, conversation_controller) {
         }
     );
 
+    app.get("/api/conversations/badges",
+        token_middleware.verify,
+        conversation_controller.count_badges,
+        function (req, res) {
+            return res.status(200).send(res.badges);
+        }
+    );
+
     app.get("/api/conversations/t/:user_id",
         token_middleware.verify,
         conversation_controller.retrieve_all,

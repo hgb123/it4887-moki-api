@@ -54,6 +54,15 @@ ConversationController.prototype.seen = function (req, res, next) {
     });
 }
 
-
+ConversationController.prototype.count_badges = function(req, res, next) {
+    dependencies.conversation_service.count_badges(req.authen_user.id, function(err, badges) {
+        if (err) {
+            next(err);
+        } else {
+            res.badges = badges;
+            next();
+        }
+    });
+}
 
 module.exports = ConversationController;
