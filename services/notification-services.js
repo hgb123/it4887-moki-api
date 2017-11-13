@@ -34,22 +34,38 @@ NotificationService.prototype.handle = function (params, callback) {
     switch (params.activity) {
         case Activity.PRODUCT_LIKED:
             send_liked_notification(params, function (err, sent) {
-                return callback(err, sent);
+                if (err) {
+                    console.error(err);
+                    return callback(null, false);
+                }
+                return callback(null, sent);
             });
             break;
         case Activity.PRODUCT_COMMENTED:
             send_commented_notification(params, function (err, sent) {
-                return callback(err, sent);
+                if (err) {
+                    console.error(err);
+                    return callback(null, false);
+                }
+                return callback(null, sent);
             });
             break;
         case Activity.PRODUCT_POSTED:
             send_posted_notification(params, function (err, sent) {
-                return callback(err, sent);
+                if (err) {
+                    console.error(err);
+                    return callback(null, false);
+                }
+                return callback(null, sent);
             });
             break;
         case Activity.CONVERSATION_REQUESTED:
             send_chat_notification(params, function (err, sent) {
-                return callback(err, sent);
+                if (err) {
+                    console.error(err);
+                    return callback(null, false);
+                }
+                return callback(null, sent);
             });
             break;
         default:
@@ -231,12 +247,12 @@ var send_posted_notification = function (params, callback) {
                     },
                     // Get user
                     function (setting, cb) {
-                        
-                            dependencies.user_repository.find_by({ id: user_id }, function (err, user) {
-                                if (err) cb(err);
-                                else if (!user) cb({ type: "Not Found" });
-                                else cb(null, setting, user);
-                            });
+
+                        dependencies.user_repository.find_by({ id: user_id }, function (err, user) {
+                            if (err) cb(err);
+                            else if (!user) cb({ type: "Not Found" });
+                            else cb(null, setting, user);
+                        });
                     },
                     // Send in-app notification
                     function (setting, user) {
@@ -255,17 +271,17 @@ var send_posted_notification = function (params, callback) {
                     function (setting, user, cb) {
                         if (!setting.following) cb({ type: "Unauthorized (push setting)" });
                         else {
-                        var notification_obj = {
-                            type: params.activity,
-                            sound: setting.sound_on ? params.activity : "mute",
-                            alert: poster.user_name + " đăng sản phẩm mới có tên " + params.product.name,
-                            data: { product_id: params.product.id }
+                            var notification_obj = {
+                                type: params.activity,
+                                sound: setting.sound_on ? params.activity : "mute",
+                                alert: poster.user_name + " đăng sản phẩm mới có tên " + params.product.name,
+                                data: { product_id: params.product.id }
+                            }
+                            dependencies.self.send_to_device(user.device_token, notification_obj, function (err, res) {
+                                cb(err, true);
+                            });
                         }
-                        dependencies.self.send_to_device(user.device_token, notification_obj, function (err, res) {
-                            cb(err, true);
-                        });
-                    }
-                    
+
                     }
                 ], function (err, sent) {
                     if (err && err.type == "Unauthorized (push setting)") e_cb();

@@ -50,11 +50,11 @@ CommentService.prototype.create = function (comment_obj, callback) {
             user_id: comment.user_id,
             product_id: comment.product_id
         }
-        // dependencies.notification_service.handle(noti_obj, function(err, sent) {
-        // if (err) return callback(err);
+        dependencies.notification_service.handle(noti_obj, function (err, sent) {
+            if (err) return callback(err);
 
-        return callback(null, comment);
-        // });
+            return callback(null, comment);
+        });
     });
 }
 
