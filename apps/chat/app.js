@@ -1,10 +1,14 @@
 var async = require("async");
+var Activity = require("../../domain-models/activity");
 var dependencies = {
-    conversation_service: null
+    io: null,
+    conversation_service: null,
+    notification_service: null
 }
 
-var ChatApp = function (server, conversation_service) {
+var ChatApp = function (server, conversation_service, notification_service) {
     dependencies.conversation_service = conversation_service;
+    dependencies.notification_service = notification_service;
     dependencies.io = require("socket.io").listen(server);
     dependencies.io.sockets.on("connection", handler);
 }
@@ -39,11 +43,22 @@ function handler(socket) {
             if (err) throw err;
 
             var is_on_same_conversation = res.is_on_same_conversation;
-            data.created_at = res.conversation.created_at;
-            var event = "receive-mesage-" + receiver_id;
-            console.log(sender_id + " sent a message to " + receiver_id);
-            console.log("Message emmited to event " + event);
-            dependencies.io.sockets.emit(event, data);
+            if (!is_on_same_conversation) {
+                var noti_obj = {
+                    activity: Activity.CONVERSATION_REQUESTED,
+                    user_id: sender_id,
+                    product_id: product_id
+                }
+                dependencies.notification_service.handle(noti_obj, function (err, sent) {
+                    if (err) throw err;
+                });
+            } else {
+                data.created_at = res.conversation.created_at;
+                var event = "receive-mesage-" + receiver_id;
+                console.log(sender_id + " sent a message to " + receiver_id);
+                console.log("Message emmited to event " + event);
+                dependencies.io.sockets.emit(event, data);
+            }
         });
     });
 

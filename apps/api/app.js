@@ -104,7 +104,7 @@ require("./routes/brand-routes")(app, brand_controller, product_controller);
 require("./routes/category-routes")(app, category_controller, product_controller);
 
 var server = require("http").Server(app);
-var chat_app = require("../chat/app")(server, conversation_service);
+var chat_app = require("../chat/app")(server, conversation_service, notification_service);
 
 app.use(function (err, req, res, next) {
     console.error(new Date());

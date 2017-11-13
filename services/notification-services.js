@@ -45,6 +45,11 @@ NotificationService.prototype.handle = function (params, callback) {
                 return callback(err, sent);
             });
             break;
+        case Activity.CONVERSATION_REQUESTED:
+            send_chat_notification(params, function (err, sent) {
+                return callback(err, sent);
+            });
+            break;
         default:
             return callback(null, false);
             break;
@@ -211,6 +216,62 @@ var send_posted_notification = function (params, callback) {
             });
         }
     ], function (err, sent) {
+        if (err) return callback(err);
+
+        return callback(null, sent);
+    });
+}
+
+var send_chat_notification = function (params, callback) {
+    var user_id = params.user_id;
+    var product_id = params.product_id;
+    async.waterfall([
+        // Get push setting
+        function (cb) {
+            dependencies.self.retrieve_setting(user_id, function (err, res) {
+                cb(err, res.push_setting);
+            });
+        },
+        // Get user
+        function (setting, cb) {
+            if (!setting.conversation) cb({ type: "Unauthorized (push setting)" });
+            else {
+                dependencies.user_repository.find_by({ id: user_id }, function (err, user) {
+                    if (err) cb(err);
+                    else if (!user) cb({ type: "Not Found" });
+                    else cb(null, setting, user);
+                });
+            }
+        },
+        // Get product
+        function (setting, user, cb) {
+            dependencies.product_repository.find_by({ id: product_id }, function (err, product) {
+                if (err) cb(err);
+                else if (!product) cb({ type: "Not Found" });
+                else cb(null, setting, user, product);
+            });
+        },
+        // Send notification
+        function (setting, user, product, cb) {
+            var notification_obj = {
+                type: params.activity,
+                sound: setting.sound_on ? params.activity : "mute",
+                alert: user.user_name + " đã gửi tin nhắn cho bạn",
+                data: {
+                    product_id,
+                    user: {
+                        id: user.id,
+                        user_name: user.user_name,
+                        avatar: user.avatar
+                    }
+                }
+            }
+            dependencies.self.send_to_device(user.device_token, notification_obj, function (err, res) {
+                cb(err, true);
+            })
+        }
+    ], function (err, sent) {
+        if (err && err.type == "Unauthorized (push setting)") return callback(null, false);
         if (err) return callback(err);
 
         return callback(null, sent);
