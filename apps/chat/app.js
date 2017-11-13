@@ -43,6 +43,7 @@ function handler(socket) {
             if (err) throw err;
 
             var is_on_same_conversation = res.is_on_same_conversation;
+            var event = "receive-mesage-" + receiver_id + "-from-" + sender_id;
             if (!is_on_same_conversation) {
                 var noti_obj = {
                     activity: Activity.CONVERSATION_REQUESTED,
@@ -51,10 +52,10 @@ function handler(socket) {
                 }
                 dependencies.notification_service.handle(noti_obj, function (err, sent) {
                     if (err) throw err;
+                    dependencies.io.sockets.emit(event, data);
                 });
             } else {
                 data.created_at = res.conversation.created_at;
-                var event = "receive-mesage-" + receiver_id;
                 console.log(sender_id + " sent a message to " + receiver_id);
                 console.log("Message emmited to event " + event);
                 dependencies.io.sockets.emit(event, data);
