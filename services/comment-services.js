@@ -14,8 +14,8 @@ var CommentService = function (comment_repository, user_repository, notification
     dependencies.notification_service = notification_service;
 }
 
-CommentService.prototype.retrieve_all = function (page, limit, callback) {
-    dependencies.comment_repository.find_all({}, page, limit, function (err, comments) {
+CommentService.prototype.retrieve_all = function (product_id, page, limit, callback) {
+    dependencies.comment_repository.find_all({ product_id: product_id }, page, limit, function (err, comments) {
         if (err) return callback(err);
 
         async.each(comments, function (comment, cb) {
@@ -24,7 +24,7 @@ CommentService.prototype.retrieve_all = function (page, limit, callback) {
                 if (err) cb(err);
                 else {
                     var poster = !user ? null : {
-                        id: user.id, 
+                        id: user.id,
                         user_name: user.user_name,
                         avatar: user.avatar
                     };
@@ -51,9 +51,9 @@ CommentService.prototype.create = function (comment_obj, callback) {
             product_id: comment.product_id
         }
         // dependencies.notification_service.handle(noti_obj, function(err, sent) {
-            // if (err) return callback(err);
+        // if (err) return callback(err);
 
-            return callback(null, comment);
+        return callback(null, comment);
         // });
     });
 }

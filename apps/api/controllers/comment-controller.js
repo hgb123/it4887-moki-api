@@ -10,7 +10,7 @@ CommentController.prototype.retrieve_all = function (req, res, next) {
     var page = req.options.offset ? req.options.offset : req.options.skip;
     var limit = req.options.limit;
 
-    dependencies.comment_service.retrieve_all(page, limit, function (err, comments) {
+    dependencies.comment_service.retrieve_all(req.params.product_id, page, limit, function (err, comments) {
         if (err) {
             next(err);
         } else {
