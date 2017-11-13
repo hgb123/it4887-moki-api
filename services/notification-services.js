@@ -62,45 +62,67 @@ var send_liked_notification = function (params, callback) {
     var user_id = params.user_id;
     var product_id = params.product_id;
     async.waterfall([
-        // Get push setting
+        // Get sender
         function (cb) {
-            dependencies.self.retrieve_setting(user_id, function (err, res) {
-                cb(err, res.push_setting);
+            dependencies.user_repository.find_by({ id: user_id }, function (err, sender) {
+                if (err) cb(err);
+                else if (!sender) cb({ type: "Not Found" });
+                else cb(null, sender);
             });
         },
-        // Get user
-        function (setting, cb) {
-            if (!setting.like) cb({ type: "Unauthorized (push setting)" });
-            else {
-                dependencies.user_repository.find_by({ id: user_id }, function (err, user) {
-                    if (err) cb(err);
-                    else if (!user) cb({ type: "Not Found" });
-                    else cb(null, setting, user);
-                });
-            }
-        },
         // Get product
-        function (setting, user, cb) {
+        function (sender, cb) {
             dependencies.product_repository.find_by({ id: product_id }, function (err, product) {
                 if (err) cb(err);
                 else if (!product) cb({ type: "Not Found" });
-                else cb(null, setting, user, product);
+                else cb(null, sender, product);
             });
         },
-        // Send notification
-        function (setting, user, product, cb) {
-            var notification_obj = {
+        // Get receiver
+        function (sender, product, cb) {
+            dependencies.user_repository.find_by({ id: product.user_id }, function (err, receiver) {
+                if (err) cb(err);
+                else if (!receiver) cb({ type: "Not Found" });
+                else if (sender.id == receiver.id) cb({ type: "Bad Request (selfie)" });
+                else cb(null, sender, product, receiver);
+            });
+        },
+        // Get push setting
+        function (sender, product, receiver, cb) {
+            dependencies.self.retrieve_setting(receiver.id, function (err, res) {
+                cb(err, sender, product, receiver, res.push_setting);
+            });
+        },
+        // Send in-app notification
+        function (sender, product, receiver, setting, cb) {
+            var noti_obj = {
                 type: params.activity,
-                sound: setting.sound_on ? params.activity : "mute",
-                alert: user.user_name + " đã thích sản phẩm " + product.name + " của bạn",
-                data: { product_id }
+                user_id: receiver.id,
+                product_id: product_id,
+                image: sender.avatar,
+                content: sender.user_name + " đã thích sản phẩm " + product.name + " của bạn"
             }
-            dependencies.self.send_to_device(user.device_token, notification_obj, function (err, res) {
-                cb(err, true);
-            })
+            dependencies.self.create(noti_obj, function (err, res) {
+                cb(err, sender, product, receiver, setting);
+            });
+        },
+        // Send push notification
+        function (sender, product, receiver, setting, cb) {
+            if (!setting.like) cb({ type: "Unauthorized (push setting)" });
+            else {
+                var notification_obj = {
+                    type: params.activity,
+                    sound: setting.sound_on ? params.activity : "mute",
+                    alert: sender.user_name + " đã thích sản phẩm " + product.name + " của bạn",
+                    data: { product_id }
+                }
+                dependencies.self.send_to_device(receiver.device_token, notification_obj, function (err, res) {
+                    cb(err, true);
+                });
+            }
         }
     ], function (err, sent) {
-        if (err && err.type == "Unauthorized (push setting)") return callback(null, false);
+        if (err && (err.type == "Unauthorized (push setting)" || err.type == "Bad Request (selfie)")) return callback(null, false);
         if (err) return callback(err);
 
         return callback(null, sent);
@@ -111,45 +133,67 @@ var send_commented_notification = function (params, callback) {
     var user_id = params.user_id;
     var product_id = params.product_id;
     async.waterfall([
-        // Get push setting
+        // Get sender
         function (cb) {
-            dependencies.self.retrieve_setting(user_id, function (err, res) {
-                cb(err, res.push_setting);
+            dependencies.user_repository.find_by({ id: user_id }, function (err, sender) {
+                if (err) cb(err);
+                else if (!sender) cb({ type: "Not Found" });
+                else cb(null, sender);
             });
         },
-        // Get user
-        function (setting, cb) {
-            if (!setting.comment) cb({ type: "Unauthorized (push setting)" });
-            else {
-                dependencies.user_repository.find_by({ id: user_id }, function (err, user) {
-                    if (err) cb(err);
-                    else if (!user) cb({ type: "Not Found" });
-                    else cb(null, setting, user);
-                });
-            }
-        },
         // Get product
-        function (setting, user, cb) {
+        function (sender, cb) {
             dependencies.product_repository.find_by({ id: product_id }, function (err, product) {
                 if (err) cb(err);
                 else if (!product) cb({ type: "Not Found" });
-                else cb(null, setting, user, product);
+                else cb(null, sender, product);
             });
         },
-        // Send notification
-        function (setting, user, product, cb) {
-            var notification_obj = {
+        // Get receiver
+        function (sender, product, cb) {
+            dependencies.user_repository.find_by({ id: product.user_id }, function (err, receiver) {
+                if (err) cb(err);
+                else if (!receiver) cb({ type: "Not Found" });
+                else if (sender.id == receiver.id) cb({ type: "Bad Request (selfie)" });
+                else cb(null, sender, product, receiver);
+            });
+        },
+        // Get push setting
+        function (sender, product, receiver, cb) {
+            dependencies.self.retrieve_setting(receiver.id, function (err, res) {
+                cb(err, sender, product, receiver, res.push_setting);
+            });
+        },
+        // Send in-app notification
+        function (sender, product, receiver, setting, cb) {
+            var noti_obj = {
                 type: params.activity,
-                sound: setting.sound_on ? params.activity : "mute",
-                alert: user.user_name + " đã bình luận vào sản phẩm " + product.name + " của bạn",
-                data: { product_id }
+                user_id: receiver.id,
+                product_id: product_id,
+                image: sender.avatar,
+                content: sender.user_name + " đã thích sản phẩm " + product.name + " của bạn"
             }
-            dependencies.self.send_to_device(user.device_token, notification_obj, function (err, res) {
-                cb(err, true);
-            })
+            dependencies.self.create(noti_obj, function (err, res) {
+                cb(err, sender, product, receiver, setting);
+            });
+        },
+        // Send push notification
+        function (sender, product, receiver, setting, cb) {
+            if (!setting.comment) cb({ type: "Unauthorized (push setting)" });
+            else {
+                var notification_obj = {
+                    type: params.activity,
+                    sound: setting.sound_on ? params.activity : "mute",
+                    alert: sender.user_name + " đã bình luận vào sản phẩm " + product.name + " của bạn",
+                    data: { product_id }
+                }
+                dependencies.self.send_to_device(receiver.device_token, notification_obj, function (err, res) {
+                    cb(err, true);
+                });
+            }
         }
     ], function (err, sent) {
-        if (err && err.type == "Unauthorized (push setting)") return callback(null, false);
+        if (err && (err.type == "Unauthorized (push setting)" || err.type == "Bad Request (selfie)")) return callback(null, false);
         if (err) return callback(err);
 
         return callback(null, sent);
@@ -187,17 +231,30 @@ var send_posted_notification = function (params, callback) {
                     },
                     // Get user
                     function (setting, cb) {
-                        if (!setting.following) cb({ type: "Unauthorized (push setting)" });
-                        else {
+                        
                             dependencies.user_repository.find_by({ id: user_id }, function (err, user) {
                                 if (err) cb(err);
                                 else if (!user) cb({ type: "Not Found" });
                                 else cb(null, setting, user);
                             });
-                        }
                     },
-                    // Send notification
+                    // Send in-app notification
+                    function (setting, user) {
+                        var noti_obj = {
+                            type: params.activity,
+                            user_id: user.id,
+                            product_id: product_id,
+                            image: product.images[0],
+                            content: poster.user_name + " đăng sản phẩm mới có tên " + params.product.name
+                        }
+                        dependencies.self.create(noti_obj, function (err, res) {
+                            cb(err, setting, user);
+                        });
+                    },
+                    // Send push notification
                     function (setting, user, cb) {
+                        if (!setting.following) cb({ type: "Unauthorized (push setting)" });
+                        else {
                         var notification_obj = {
                             type: params.activity,
                             sound: setting.sound_on ? params.activity : "mute",
@@ -206,7 +263,9 @@ var send_posted_notification = function (params, callback) {
                         }
                         dependencies.self.send_to_device(user.device_token, notification_obj, function (err, res) {
                             cb(err, true);
-                        })
+                        });
+                    }
+                    
                     }
                 ], function (err, sent) {
                     if (err && err.type == "Unauthorized (push setting)") e_cb();
@@ -228,50 +287,72 @@ var send_chat_notification = function (params, callback) {
     var user_id = params.user_id;
     var product_id = params.product_id;
     async.waterfall([
-        // Get push setting
+        // Get sender
         function (cb) {
-            dependencies.self.retrieve_setting(user_id, function (err, res) {
-                cb(err, res.push_setting);
+            dependencies.user_repository.find_by({ id: user_id }, function (err, sender) {
+                if (err) cb(err);
+                else if (!sender) cb({ type: "Not Found" });
+                else cb(null, sender);
             });
         },
-        // Get user
-        function (setting, cb) {
-            if (!setting.conversation) cb({ type: "Unauthorized (push setting)" });
-            else {
-                dependencies.user_repository.find_by({ id: user_id }, function (err, user) {
-                    if (err) cb(err);
-                    else if (!user) cb({ type: "Not Found" });
-                    else cb(null, setting, user);
-                });
-            }
-        },
         // Get product
-        function (setting, user, cb) {
+        function (sender, cb) {
             dependencies.product_repository.find_by({ id: product_id }, function (err, product) {
                 if (err) cb(err);
                 else if (!product) cb({ type: "Not Found" });
-                else cb(null, setting, user, product);
+                else cb(null, sender, product);
             });
         },
-        // Send notification
-        function (setting, user, product, cb) {
-            var notification_obj = {
+        // Get receiver
+        function (sender, product, cb) {
+            dependencies.user_repository.find_by({ id: product.user_id }, function (err, receiver) {
+                if (err) cb(err);
+                else if (!receiver) cb({ type: "Not Found" });
+                else if (sender.id == receiver.id) cb({ type: "Bad Request (selfie)" });
+                else cb(null, sender, product, receiver);
+            });
+        },
+        // Get push setting
+        function (sender, product, receiver, cb) {
+            dependencies.self.retrieve_setting(receiver.id, function (err, res) {
+                cb(err, sender, product, receiver, res.push_setting);
+            });
+        },
+        // Send in-app notification
+        function (sender, product, receiver, setting, cb) {
+            var noti_obj = {
                 type: params.activity,
-                sound: setting.sound_on ? params.activity : "mute",
-                alert: user.user_name + " đã gửi tin nhắn cho bạn",
-                data: {
-                    product_id,
-                    id: user.id,
-                    user_name: user.user_name,
-                    avatar: user.avatar
-                }
+                user_id: receiver.id,
+                product_id: product_id,
+                image: sender.avatar,
+                content: sender.user_name + " đã gửi tin nhắn cho bạn"
             }
-            dependencies.self.send_to_device(user.device_token, notification_obj, function (err, res) {
-                cb(err, true);
-            })
+            dependencies.self.create(noti_obj, function (err, res) {
+                cb(err, sender, product, receiver, setting);
+            });
+        },
+        // Send push notification
+        function (sender, product, receiver, setting, cb) {
+            if (!setting.conversation) cb({ type: "Unauthorized (push setting)" });
+            else {
+                var notification_obj = {
+                    type: params.activity,
+                    sound: setting.sound_on ? params.activity : "mute",
+                    alert: sender.user_name + " đã gửi tin nhắn cho bạn",
+                    data: {
+                        product_id,
+                        id: sender.id,
+                        user_name: sender.user_name,
+                        avatar: sender.avatar
+                    }
+                }
+                dependencies.self.send_to_device(receiver.device_token, notification_obj, function (err, res) {
+                    cb(err, true);
+                });
+            }
         }
     ], function (err, sent) {
-        if (err && err.type == "Unauthorized (push setting)") return callback(null, false);
+        if (err && (err.type == "Unauthorized (push setting)" || err.type == "Bad Request (selfie)")) return callback(null, false);
         if (err) return callback(err);
 
         return callback(null, sent);
