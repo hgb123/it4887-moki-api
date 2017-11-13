@@ -45,12 +45,9 @@ ConversationRepository.prototype.count_message = function (condition, callback) 
 
 ConversationRepository.prototype.count_badges = function (condition, callback) {
     dependencies.Conversation
-        .count({
-            group: ["sender_id"],
-            where: condition,
-        })
+        .aggregate("sender_id", "count", { distinct: true, where: condition })
         .then(function (result) {
-            callback(null, result.length);
+            callback(null, result);
         })
         .catch(function (err) {
             callback(err, null);
