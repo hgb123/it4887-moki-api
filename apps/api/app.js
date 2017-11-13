@@ -23,6 +23,7 @@ var mysql_data_context = require("../../repository/mysql-context")(config.mysql)
 // Repository
 var UserRepository = require("../../repository/user-repository");
 var PushSettingRepository = require("../../repository/push-setting-repository");
+var NotificationRepository = require("../../repository/notification-repository");
 var FollowRepository = require("../../repository/follow-repository");
 var BlockRepository = require("../../repository/block-repository");
 var ConversationRepository = require("../../repository/conversation-repository");
@@ -36,6 +37,7 @@ var CommentRepository = require("../../repository/comment-repository");
 
 var user_repository = new UserRepository(mysql_data_context);
 var push_setting_repository = new PushSettingRepository(mysql_data_context);
+var notification_repository = new NotificationRepository(mysql_data_context);
 var follow_repository = new FollowRepository(mysql_data_context);
 var block_repository = new BlockRepository(mysql_data_context);
 var conversation_repository = new ConversationRepository(mysql_data_context);
@@ -61,7 +63,7 @@ var CommentService = require("../../services/comment-services");
 
 var authen_service = new AuthenService(user_repository);
 var user_service = new UserService(user_repository, follow_repository, block_repository);
-var notification_service = new NotificationService(user_repository, follow_repository, product_repository, push_setting_repository);
+var notification_service = new NotificationService(user_repository, follow_repository, product_repository, push_setting_repository, notification_repository);
 var conversation_service = new ConversationService(conversation_repository, user_repository);
 var token_service = new TokenService();
 var product_service = new ProductService(product_repository, category_repository, product_category_repository, brand_repository, like_repository, comment_repository, user_repository, block_repository, notification_service);

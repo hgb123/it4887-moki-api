@@ -2,6 +2,7 @@ var async = require("async");
 var config = require("../config/config");
 var Activity = require("../domain-models/activity");
 var PushSetting = require("../domain-models/push-setting");
+var Notification = require("../domain-models/notification");
 var dependencies = {
     self: null,
     admin: null,
@@ -13,7 +14,7 @@ var dependencies = {
     notification_repository: null
 }
 
-var NotificationService = function (user_repository, following_repository, product_repository, push_setting_repository) {
+var NotificationService = function (user_repository, following_repository, product_repository, push_setting_repository, notification_repository) {
     dependencies.self = this;
     dependencies.admin = require("firebase-admin");
     dependencies.admin.initializeApp({
@@ -25,6 +26,7 @@ var NotificationService = function (user_repository, following_repository, produ
     dependencies.following_repository = following_repository;
     dependencies.product_repository = product_repository;
     dependencies.push_setting_repository = push_setting_repository;
+    dependencies.notification_repository = notification_repository;
 }
 
 
@@ -292,11 +294,51 @@ NotificationService.prototype.send_to_device = function (registration_tokens, no
         });
 }
 
-NotificationService.prototype.send_to_topic = function (callback) {
-    dependencies.messaging.sendToTopic(topic, payload, function (err, res) {
+NotificationService.prototype.retrieve_all = function (user_id, page, limit, callback) {
+    var condition = { user_id: user_id };
+    dependencies.notification_repository.find_all(condition, page, limit, function (err, notifications) {
         if (err) return callback(err);
 
-        return callback(null, res);
+        return callback(null, { notifications });
+    });
+}
+
+NotificationService.prototype.read_all = function (user_id, callback) {
+    var condition = { user_id: user_id };
+    var noti_update_obj = { is_read: true };
+    dependencies.notification_repository.update(condition, noti_update_obj, function (err, read) {
+        if (err) return callback(err);
+
+        return callback(null, {
+            message: "All notifcations are successfully read."
+        })
+    });
+}
+
+NotificationService.prototype.create = function (noti_obj, callback) {
+    var notification_obj = new Notification({
+        type: noti_obj.type,
+        user_id: noti_obj.user_id,
+        product_id: noti_obj.product_id,
+        image: noti_obj.image,
+        content: noti_obj.content
+    })
+    dependencies.notification_repository.create(notification_obj, function (err, notification) {
+        if (err) return callback(err);
+
+        return callback(null, { notification });
+    });
+}
+
+NotificationService.prototype.count_badges = function (user_id, callback) {
+    var condition = {
+        user_id: user_id,
+        is_read: false
+    }
+    dependencies.notification_repository.count(condition, function (err, badges) {
+        if (err) return callback(err);
+
+        return callback(null, { badges });
     });
 }
 
