@@ -373,9 +373,9 @@ function add_more_properties(user_id, product, callback) {
         function (cb) {
             var condition = { id: product.user_id };
             dependencies.user_repository.find_by(condition, function (err, user) {
-                cb(err, {
+                cb(err, !user ? null : {
                     id: user.id,
-                    name: user.user_name,
+                    user_name: user.user_name,
                     avatar: user.avatar
                 });
             });

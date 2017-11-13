@@ -25,7 +25,7 @@ CommentService.prototype.retrieve_all = function (page, limit, callback) {
                 else {
                     var poster = !user ? null : {
                         id: user.id, 
-                        name: user.user_name,
+                        user_name: user.user_name,
                         avatar: user.avatar
                     };
                     comment.poster = poster;

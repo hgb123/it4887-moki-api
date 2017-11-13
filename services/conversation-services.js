@@ -41,7 +41,7 @@ ConversationService.prototype.retrieve_list = function (p_uid, page, limit, call
                     var user = results[0];
                     var receiver = !user ? null : {
                         id: user.id,
-                        name: user.user_name,
+                        user_name: user.user_name,
                         avatar: user.avatar
                     };
                     delete conversation.receiver_id;
