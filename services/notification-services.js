@@ -318,19 +318,6 @@ var send_chat_notification = function (params, callback) {
                 cb(err, sender, product, receiver, res.push_setting);
             });
         },
-        // Send in-app notification
-        function (sender, product, receiver, setting, cb) {
-            var noti_obj = {
-                type: params.activity,
-                user_id: receiver.id,
-                product_id: product_id,
-                image: sender.avatar,
-                content: sender.user_name + " đã gửi tin nhắn cho bạn"
-            }
-            dependencies.self.create(noti_obj, function (err, res) {
-                cb(err, sender, product, receiver, setting);
-            });
-        },
         // Send push notification
         function (sender, product, receiver, setting, cb) {
             if (!setting.conversation) cb({ type: "Unauthorized (push setting)" });
