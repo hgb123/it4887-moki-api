@@ -259,11 +259,9 @@ var send_chat_notification = function (params, callback) {
                 alert: user.user_name + " đã gửi tin nhắn cho bạn",
                 data: {
                     product_id,
-                    user: {
-                        id: user.id,
-                        user_name: user.user_name,
-                        avatar: user.avatar
-                    }
+                    id: user.id,
+                    user_name: user.user_name,
+                    avatar: user.avatar
                 }
             }
             dependencies.self.send_to_device(user.device_token, notification_obj, function (err, res) {
