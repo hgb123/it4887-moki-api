@@ -14,6 +14,10 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING(500),
             allowNull: false
         },
+        latest_product_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         is_joined: {
             type: DataTypes.BOOLEAN,
             allowNull: true
