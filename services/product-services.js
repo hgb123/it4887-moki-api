@@ -199,10 +199,10 @@ ProductService.prototype.create = function (user_id, product_obj, callback) {
             product: product
         }
         // dependencies.notification_service.handle(noti_obj, function (err, sent) {
-            // if (err) return callback(err);
+        // if (err) return callback(err);
 
-            product.category_ids = category_ids;
-            return callback(null, product);
+        product.category_ids = category_ids;
+        return callback(null, product);
         // });
     });
 }
@@ -314,11 +314,11 @@ ProductService.prototype.like = function (user_id, product_id, callback) {
             product_id: product_id
         }
         // dependencies.notification_service.handle(noti_obj, function (err, sent) {
-            // if (err) return callback(err);
+        // if (err) return callback(err);
 
-            return callback(null, {
-                message: "Product is " + (liked ? "liked." : "unliked.")
-            });
+        return callback(null, {
+            message: "Product is " + (liked ? "liked." : "unliked.")
+        });
         // });
     });
 }
@@ -379,6 +379,37 @@ function add_more_properties(user_id, product, callback) {
                     avatar: user.avatar
                 });
             });
+        },
+        // Get brand info
+        function (cb) {
+            if (product.brand_id) {
+                var condition = { id: product.brand_id };
+                dependencies.brand_repository.find_by(condition, function (err, brand) {
+                    cb(err, brand);
+                });
+            } else cb(null, product.brand_id);
+        },
+        // Get categories info
+        function (cb) {
+            var condition = { product_id: product.id };
+            dependencies.product_category_repository.find_all(condition, 0, 1000, function (err, prod_cats) {
+                if (err) cb(err);
+                else {
+                    var categories = [];
+                    async.each(prod_cats, function (prod_cat, e_cb) {
+                        var condition = { id: prod_cat.category_id };
+                        dependencies.category_repository.find_by(condition, function (err, category) {
+                            if (err) e_cb(err);
+                            else {
+                                categories.push(category);
+                                e_cb();
+                            }
+                        });
+                    }, function (err) {
+                        cb(err, categories);
+                    });
+                }
+            });
         }
     ], function (err, results) {
         if (err) return callback(err);
@@ -389,6 +420,9 @@ function add_more_properties(user_id, product, callback) {
         product.is_blocked = results[3];
         product.is_editable = results[4];
         product.seller = results[5];
+        delete product.brand_id;
+        product.brand = results[6];
+        product.categories = results[7];
         return callback(null, product);
     });
 }
