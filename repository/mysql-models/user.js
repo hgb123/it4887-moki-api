@@ -17,7 +17,7 @@ module.exports = function (sequelize, DataTypes) {
             defaultValue: 1
         },
         avatar: {
-            type: DataTypes.STRING(200),
+            type: DataTypes.TEXT,
             allowNull: true
         },
         phone_number: {
