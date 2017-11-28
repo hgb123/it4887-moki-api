@@ -1,5 +1,5 @@
 # IT4887 - Moki API
-======
+
 ## Require
 nodeJS version ~8.9.0
 npm version ~5.5.1
