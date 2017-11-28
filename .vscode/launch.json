@@ -7,7 +7,7 @@
                 "name": "Launch Program",
                 "program": "${workspaceRoot}/apps/api/app.js",
                 "env": {
-                    "NODE_ENV": "local"
+                    "NODE_ENV": "dev"
                 }
             },
             {
