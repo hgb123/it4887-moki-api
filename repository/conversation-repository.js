@@ -43,6 +43,17 @@ ConversationRepository.prototype.count_message = function (condition, callback) 
         });
 }
 
+ConversationRepository.prototype.count_badges = function (condition, callback) {
+    dependencies.Conversation
+        .aggregate("sender_id", "count", { distinct: true, where: condition })
+        .then(function (result) {
+            callback(null, result);
+        })
+        .catch(function (err) {
+            callback(err, null);
+        });
+}
+
 ConversationRepository.prototype.find_message_by = function (condition, callback) {
     dependencies.Conversation
         .findOne({

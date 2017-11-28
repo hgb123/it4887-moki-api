@@ -7,7 +7,7 @@
                 "name": "Launch Program",
                 "program": "${workspaceRoot}/apps/api/app.js",
                 "env": {
-                    "NODE_ENV": "local"
+                    "NODE_ENV": "dev"
                 }
             },
             {
@@ -15,6 +15,15 @@
                 "request": "launch",
                 "name": "Sync DB Schema",
                 "program": "${workspaceRoot}/mysql-schema/sync.js",
+                "env": {
+                    "NODE_ENV": "local"
+                }
+            },
+            {
+                "type": "node",
+                "request": "launch",
+                "name": "Test Script",
+                "program": "${workspaceRoot}/tests/test2.js",
                 "env": {
                     "NODE_ENV": "local"
                 }

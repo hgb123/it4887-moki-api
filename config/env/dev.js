@@ -5,7 +5,8 @@ module.exports = {
         password: "Haha123456789",
         database: "moki",
         host: "baoserver.cra3yvihlrzl.us-east-2.rds.amazonaws.com",
-        dialect: "mysql"
+        dialect: "mysql",
+        logging: false
     },
     authen: {
         secret: "localtest",

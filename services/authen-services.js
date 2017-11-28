@@ -61,10 +61,18 @@ AuthenService.prototype.login = function (phone_number, password, callback) {
                 else if (!match) cb({ type: "Unauthorized" });
                 else cb(err, user);
             });
+        },
+        function (user, cb) {
+            var condition = { phone_number: phone_number }
+            var user_obj = { is_online: true }
+            dependencies.user_repository.update(condition, user_obj, function (err, online) {
+                cb(err, user);
+            });
         }
     ], function (err, user) {
         if (err) return callback(err);
 
+        user.is_online = true;
         return callback(null, user);
     });
 }

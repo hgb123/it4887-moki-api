@@ -1,5 +1,6 @@
 var async = require("async");
 var config = require("../config/config");
+var Activity = require("../domain-models/activity");
 var Product = require("../domain-models/product");
 var dependencies = {
     product_repository: null,
@@ -9,10 +10,11 @@ var dependencies = {
     like_repository: null,
     comment_repository: null,
     user_repository: null,
-    block_repository: null
+    block_repository: null,
+    notification_service: null
 }
 
-var ProductService = function (product_repository, category_repository, product_category_repository, brand_repository, like_repository, comment_repository, user_repository, block_repository) {
+var ProductService = function (product_repository, category_repository, product_category_repository, brand_repository, like_repository, comment_repository, user_repository, block_repository, notification_service) {
     dependencies.product_repository = product_repository;
     dependencies.category_repository = category_repository;
     dependencies.product_category_repository = product_category_repository;
@@ -21,6 +23,7 @@ var ProductService = function (product_repository, category_repository, product_
     dependencies.comment_repository = comment_repository;
     dependencies.user_repository = user_repository;
     dependencies.block_repository = block_repository;
+    dependencies.notification_service = notification_service;
 }
 
 ProductService.prototype.retrieve_all = function (user_id, owner_id, brand_id, category_id, user_likes_id, page, limit, callback) {
@@ -94,7 +97,7 @@ ProductService.prototype.retrieve_all = function (user_id, owner_id, brand_id, c
     });
 }
 
-ProductService.prototype.retrieve_some = function(user_id, pre_condition, order_by, page, limit, callback) {
+ProductService.prototype.retrieve_some = function (user_id, pre_condition, order_by, page, limit, callback) {
     var condition = {};
     if (pre_condition.keyword) condition.keyword = pre_condition.keyword;
     async.waterfall([
@@ -128,7 +131,7 @@ ProductService.prototype.retrieve_some = function(user_id, pre_condition, order_
     ], function (err, condition) {
         if (err) return callback(err);
 
-        dependencies.product_repository.find_some(condition, order_by, page, limit, function(err, res) {
+        dependencies.product_repository.find_some(condition, order_by, page, limit, function (err, res) {
             if (err) return callback(err);
 
             var products = [];
@@ -191,10 +194,17 @@ ProductService.prototype.create = function (user_id, product_obj, callback) {
     ], function (err, product) {
         if (err) return callback(err);
 
-        product.category_ids = category_ids;
-        return callback(null, product);
-    });
+        var noti_obj = {
+            activity: Activity.PRODUCT_POSTED,
+            product: product
+        }
+        dependencies.notification_service.handle(noti_obj, function (err, sent) {
+            if (err) return callback(err);
 
+            product.category_ids = category_ids;
+            return callback(null, product);
+        });
+    });
 }
 
 ProductService.prototype.update = function (product_obj, callback) {
@@ -298,8 +308,17 @@ ProductService.prototype.like = function (user_id, product_id, callback) {
     ], function (err, liked) {
         if (err) return callback(err);
 
-        return callback(null, {
-            message: "Product is " + (liked ? "liked." : "unliked.")
+        var noti_obj = {
+            activity: Activity.PRODUCT_LIKED,
+            user_id: user_id,
+            product_id: product_id
+        }
+        dependencies.notification_service.handle(noti_obj, function (err, sent) {
+            if (err) return callback(err);
+
+            return callback(null, {
+                message: "Product is " + (liked ? "liked." : "unliked.")
+            });
         });
     });
 }
@@ -354,11 +373,42 @@ function add_more_properties(user_id, product, callback) {
         function (cb) {
             var condition = { id: product.user_id };
             dependencies.user_repository.find_by(condition, function (err, user) {
-                cb(err, {
+                cb(err, !user ? null : {
                     id: user.id,
-                    name: user.user_name,
+                    user_name: user.user_name,
                     avatar: user.avatar
                 });
+            });
+        },
+        // Get brand info
+        function (cb) {
+            if (product.brand_id) {
+                var condition = { id: product.brand_id };
+                dependencies.brand_repository.find_by(condition, function (err, brand) {
+                    cb(err, brand);
+                });
+            } else cb(null, product.brand_id);
+        },
+        // Get categories info
+        function (cb) {
+            var condition = { product_id: product.id };
+            dependencies.product_category_repository.find_all(condition, 0, 1000, function (err, prod_cats) {
+                if (err) cb(err);
+                else {
+                    var categories = [];
+                    async.each(prod_cats, function (prod_cat, e_cb) {
+                        var condition = { id: prod_cat.category_id };
+                        dependencies.category_repository.find_by(condition, function (err, category) {
+                            if (err) e_cb(err);
+                            else {
+                                categories.push(category);
+                                e_cb();
+                            }
+                        });
+                    }, function (err) {
+                        cb(err, categories);
+                    });
+                }
             });
         }
     ], function (err, results) {
@@ -370,6 +420,9 @@ function add_more_properties(user_id, product, callback) {
         product.is_blocked = results[3];
         product.is_editable = results[4];
         product.seller = results[5];
+        delete product.brand_id;
+        product.brand = results[6];
+        product.categories = results[7];
         return callback(null, product);
     });
 }

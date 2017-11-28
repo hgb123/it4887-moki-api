@@ -1,18 +1,21 @@
 var async = require("async");
 var config = require("../config/config");
+var Activity = require("../domain-models/activity");
 var Comment = require("../domain-models/comment");
 var dependencies = {
     comment_repository: null,
-    user_repository: null
+    user_repository: null,
+    notification_service: null
 }
 
-var CommentService = function (comment_repository, user_repository) {
+var CommentService = function (comment_repository, user_repository, notification_service) {
     dependencies.comment_repository = comment_repository;
     dependencies.user_repository = user_repository;
+    dependencies.notification_service = notification_service;
 }
 
-CommentService.prototype.retrieve_all = function (page, limit, callback) {
-    dependencies.comment_repository.find_all({}, page, limit, function (err, comments) {
+CommentService.prototype.retrieve_all = function (product_id, page, limit, callback) {
+    dependencies.comment_repository.find_all({ product_id: product_id }, page, limit, function (err, comments) {
         if (err) return callback(err);
 
         async.each(comments, function (comment, cb) {
@@ -21,8 +24,8 @@ CommentService.prototype.retrieve_all = function (page, limit, callback) {
                 if (err) cb(err);
                 else {
                     var poster = !user ? null : {
-                        id: user.id, 
-                        name: user.user_name,
+                        id: user.id,
+                        user_name: user.user_name,
                         avatar: user.avatar
                     };
                     comment.poster = poster;
@@ -42,7 +45,16 @@ CommentService.prototype.create = function (comment_obj, callback) {
     dependencies.comment_repository.create(comment_obj, function (err, comment) {
         if (err) return callback(err);
 
-        return callback(null, comment);
+        var noti_obj = {
+            activity: Activity.PRODUCT_COMMENTED,
+            user_id: comment.user_id,
+            product_id: comment.product_id
+        }
+        dependencies.notification_service.handle(noti_obj, function (err, sent) {
+            if (err) return callback(err);
+
+            return callback(null, comment);
+        });
     });
 }
 
